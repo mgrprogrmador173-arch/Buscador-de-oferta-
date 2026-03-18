@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Buscador de Ofertas no Meu Bairro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #081120;
+        --bg-soft: #0f1b31;
+        --card: rgba(15, 27, 49, 0.92);
+        --card-border: rgba(129, 160, 255, 0.2);
+        --text: #f5f7ff;
+        --muted: #a9b6d3;
+        --primary: #66e3ff;
+        --primary-strong: #19b8dd;
+        --secondary: #7d8cff;
+        --success: #6effa7;
+        --warning: #ffd56f;
+        --shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: 'Inter', system-ui, sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(circle at top, rgba(102, 227, 255, 0.15), transparent 30%),
+          linear-gradient(180deg, #081120 0%, #040914 100%);
+      }
+
+      .layout {
+        width: min(1120px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 40px 0 56px;
+        display: grid;
+        gap: 20px;
+      }
+
+      .card {
+        background: var(--card);
+        border: 1px solid var(--card-border);
+        border-radius: 24px;
+        padding: 24px;
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(12px);
+      }
+
+      .hero,
+      .hero-copy {
+        display: grid;
+        gap: 24px;
+      }
+
+      .tag,
+      .platform-badge {
+        display: inline-flex;
+        align-items: center;
+        width: fit-content;
+        padding: 6px 12px;
+        border-radius: 999px;
+        background: rgba(102, 227, 255, 0.12);
+        color: var(--primary);
+        font-size: 0.85rem;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+
+      h1 {
+        font-size: clamp(2rem, 4vw, 4rem);
+        line-height: 1.05;
+        margin-bottom: 16px;
+        max-width: 14ch;
+      }
+
+      .subtitle,
+      .section-heading p,
+      .platform-description,
+      .platform-meta,
+      label,
+      .feedback {
+        color: var(--muted);
+      }
+
+      .section-heading-inline {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: flex-start;
+      }
+
+      .hero-actions,
+      .inline-actions,
+      .platform-actions,
+      .platform-topline {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+      }
+
+      button,
+      .platform-link,
+      select,
+      textarea,
+      input {
+        font: inherit;
+      }
+
+      button,
+      .platform-link {
+        border: none;
+        border-radius: 14px;
+        padding: 14px 18px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+      }
+
+      button:hover,
+      .platform-link:hover {
+        transform: translateY(-1px);
+      }
+
+      .primary-button {
+        background: linear-gradient(135deg, var(--primary), var(--primary-strong));
+        color: #02131a;
+      }
+
+      .secondary-button,
+      .ghost-button {
+        background: rgba(125, 140, 255, 0.15);
+        color: var(--text);
+        border: 1px solid rgba(125, 140, 255, 0.3);
+      }
+
+      .ghost-button {
+        padding: 12px 16px;
+      }
+
+      .status-grid,
+      .form-grid,
+      .platform-list {
+        display: grid;
+        gap: 16px;
+      }
+
+      .status-grid {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      }
+
+      .status-card,
+      .platform-card {
+        background: var(--bg-soft);
+        border: 1px solid rgba(129, 160, 255, 0.16);
+        border-radius: 18px;
+        padding: 18px;
+      }
+
+      .status-label {
+        display: block;
+        margin-bottom: 10px;
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+
+      .form-grid {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      }
+
+      .full-width {
+        grid-column: 1 / -1;
+      }
+
+      label {
+        display: grid;
+        gap: 10px;
+        font-weight: 600;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        border: 1px solid rgba(169, 182, 211, 0.22);
+        background: rgba(8, 17, 32, 0.72);
+        color: var(--text);
+        border-radius: 14px;
+        padding: 14px;
+      }
+
+      textarea {
+        resize: vertical;
+      }
+
+      input[type='range'] {
+        padding: 0;
+      }
+
+      .platform-list {
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      }
+
+      .platform-card {
+        display: grid;
+        gap: 16px;
+      }
+
+      .platform-toggle {
+        display: inline-flex;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .platform-toggle input {
+        width: 18px;
+        height: 18px;
+        margin: 0;
+      }
+
+      .platform-card h3 {
+        margin: 0 0 8px;
+      }
+
+      .platform-meta {
+        font-size: 0.95rem;
+      }
+
+      .platform-link {
+        flex: 1;
+        text-decoration: none;
+        text-align: center;
+        background: rgba(110, 255, 167, 0.12);
+        color: var(--success);
+        border: 1px solid rgba(110, 255, 167, 0.18);
+      }
+
+      .feedback {
+        min-height: 24px;
+        font-weight: 600;
+      }
+
+      .feedback.success {
+        color: var(--success);
+      }
+
+      .feedback.warning {
+        color: var(--warning);
+      }
+
+      .tips ul {
+        margin: 0;
+        padding-left: 20px;
+        color: var(--muted);
+        display: grid;
+        gap: 8px;
+      }
+
+      @media (max-width: 640px) {
+        .layout {
+          width: min(100% - 20px, 1120px);
+          padding-top: 20px;
+        }
+
+        .card {
+          padding: 18px;
+          border-radius: 20px;
+        }
+
+        .section-heading-inline {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="layout">
+      <section class="hero card">
+        <div class="hero-copy">
+          <p class="tag">Ofertas e usados perto de você</p>
+          <h1>Busque anúncios de usados no seu bairro usando a localização do celular.</h1>
+          <p class="subtitle">
+            O app usa o GPS do navegador para sugerir bairro, cidade e estado, monta uma busca
+            local mais inteligente e gera atalhos para marketplaces e sites gratuitos de anúncio.
+          </p>
+        </div>
+
+        <div class="hero-actions">
+          <button id="detect-location" class="primary-button" type="button">
+            Usar minha localização
+          </button>
+          <button id="open-all-searches" class="secondary-button" type="button">
+            Abrir buscas selecionadas
+          </button>
+        </div>
+
+        <div class="status-grid">
+          <article class="status-card">
+            <span class="status-label">Status do GPS</span>
+            <strong id="gps-status">Aguardando permissão</strong>
+          </article>
+          <article class="status-card">
+            <span class="status-label">Região detectada</span>
+            <strong id="location-summary">Nenhuma localização definida</strong>
+          </article>
+          <article class="status-card">
+            <span class="status-label">Raio da busca</span>
+            <strong id="radius-summary">5 km</strong>
+          </article>
+          <article class="status-card">
+            <span class="status-label">Coordenadas</span>
+            <strong id="coordinates-summary">Ainda não disponíveis</strong>
+          </article>
+        </div>
+      </section>
+
+      <section class="controls card">
+        <div class="section-heading">
+          <h2>Monte sua busca local</h2>
+          <p>
+            Defina o item, informe preço máximo se quiser e refine a região manualmente caso o GPS
+            não encontre exatamente o seu bairro.
+          </p>
+        </div>
+
+        <form id="search-form" class="form-grid">
+          <label>
+            O que você procura?
+            <input
+              type="text"
+              id="query"
+              name="query"
+              placeholder="Ex.: bicicleta, sofá, geladeira, iPhone"
+              value="bicicleta usada"
+              required
+            />
+          </label>
+
+          <label>
+            Categoria
+            <select id="category" name="category">
+              <option value="usado">Usados em geral</option>
+              <option value="móveis">Móveis</option>
+              <option value="eletrônicos">Eletrônicos</option>
+              <option value="celulares">Celulares</option>
+              <option value="veículos">Veículos</option>
+            </select>
+          </label>
+
+          <label>
+            Bairro / região
+            <input
+              type="text"
+              id="neighborhood"
+              name="neighborhood"
+              placeholder="Ex.: Mooca, Centro, Copacabana"
+            />
+          </label>
+
+          <label>
+            Cidade
+            <input type="text" id="city" name="city" placeholder="Ex.: São Paulo" />
+          </label>
+
+          <label>
+            Estado
+            <input type="text" id="state" name="state" placeholder="Ex.: SP" maxlength="2" />
+          </label>
+
+          <label>
+            Raio da busca
+            <input type="range" id="radius" name="radius" min="1" max="30" value="5" />
+          </label>
+
+          <label>
+            Faixa de preço máxima
+            <input type="number" id="max-price" name="max-price" min="0" placeholder="Ex.: 1500" />
+          </label>
+
+          <label class="full-width">
+            Termo gerado automaticamente
+            <textarea id="search-preview" rows="3" readonly></textarea>
+          </label>
+
+          <div class="full-width inline-actions">
+            <button id="copy-search" class="secondary-button" type="button">Copiar consulta</button>
+            <button class="primary-button" type="submit">Atualizar resultados</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="results card">
+        <div class="section-heading section-heading-inline">
+          <div>
+            <h2>Plataformas recomendadas</h2>
+            <p>
+              Escolha os sites que quer abrir. Cada card recebe o mesmo termo de busca local.
+            </p>
+          </div>
+          <p id="feedback" class="feedback" aria-live="polite"></p>
+        </div>
+
+        <div id="platform-list" class="platform-list"></div>
+      </section>
+
+      <section class="tips card">
+        <div class="section-heading">
+          <h2>Dicas para encontrar ofertas melhores</h2>
+        </div>
+        <ul>
+          <li>Compare o mesmo produto em mais de uma plataforma antes de fechar negócio.</li>
+          <li>Prefira anúncios com fotos reais, descrição completa e vendedor ativo recentemente.</li>
+          <li>Use um raio menor para achar oportunidades de retirada rápida no próprio bairro.</li>
+          <li>Abra as buscas em `localhost` ou `https` para permitir o uso do GPS sem bloqueio.</li>
+        </ul>
+      </section>
+    </main>
+
+    <template id="platform-template">
+      <article class="platform-card">
+        <div class="platform-topline">
+          <label class="platform-toggle">
+            <input class="platform-checkbox" type="checkbox" checked />
+            <span>Selecionar</span>
+          </label>
+          <p class="platform-badge"></p>
+        </div>
+
+        <div>
+          <h3></h3>
+          <p class="platform-description"></p>
+        </div>
+
+        <div class="platform-meta"></div>
+
+        <div class="platform-actions">
+          <a class="platform-link" target="_blank" rel="noreferrer">Abrir busca</a>
+          <button class="ghost-button copy-link-button" type="button">Copiar link</button>
+        </div>
+      </article>
+    </template>
+
+    <script>
+      const platforms = [
+        {
+          key: 'facebook',
+          name: 'Facebook Marketplace',
+          badge: 'Rede social',
+          description: 'Bom para móveis, eletrônicos e usados próximos da sua região.',
+          buildUrl: ({ query }) => `https://www.facebook.com/marketplace/search/?query=${encodeURIComponent(query)}`,
+        },
+        {
+          key: 'olx',
+          name: 'OLX',
+          badge: 'Classificados grátis',
+          description: 'Busca ampla por usados com bastante oferta local e filtro de preço.',
+          buildUrl: ({ query }) => `https://www.olx.com.br/brasil?q=${encodeURIComponent(query)}`,
+        },
+        {
+          key: 'mercado-livre',
+          name: 'Mercado Livre',
+          badge: 'Marketplace',
+          description: 'Ótimo para comparar preço e descobrir anúncios com retirada próxima.',
+          buildUrl: ({ query }) => `https://lista.mercadolivre.com.br/${encodeURIComponent(query)}`,
+        },
+        {
+          key: 'webmotors',
+          name: 'Webmotors',
+          badge: 'Veículos',
+          description: 'Mais útil para buscas de carros, motos e peças usadas.',
+          buildUrl: ({ query }) => `https://www.webmotors.com.br/carros-usados/estoque?search=${encodeURIComponent(query)}`,
+        },
+        {
+          key: 'google',
+          name: 'Google',
+          badge: 'Busca ampla',
+          description: 'Procura em sites de anúncio gratuito, classificados locais e grupos públicos.',
+          buildUrl: ({ query }) => `https://www.google.com/search?q=${encodeURIComponent(query)}`,
+        },
+      ];
+
+      const state = {
+        coordinates: null,
+        selectedPlatforms: new Set(platforms.map((platform) => platform.key)),
+        address: {
+          neighborhood: '',
+          city: '',
+          state: '',
+        },
+      };
+
+      const elements = {
+        detectLocation: document.querySelector('#detect-location'),
+        openAllSearches: document.querySelector('#open-all-searches'),
+        copySearch: document.querySelector('#copy-search'),
+        form: document.querySelector('#search-form'),
+        query: document.querySelector('#query'),
+        category: document.querySelector('#category'),
+        neighborhood: document.querySelector('#neighborhood'),
+        city: document.querySelector('#city'),
+        regionState: document.querySelector('#state'),
+        radius: document.querySelector('#radius'),
+        maxPrice: document.querySelector('#max-price'),
+        searchPreview: document.querySelector('#search-preview'),
+        gpsStatus: document.querySelector('#gps-status'),
+        locationSummary: document.querySelector('#location-summary'),
+        coordinatesSummary: document.querySelector('#coordinates-summary'),
+        radiusSummary: document.querySelector('#radius-summary'),
+        feedback: document.querySelector('#feedback'),
+        platformList: document.querySelector('#platform-list'),
+        platformTemplate: document.querySelector('#platform-template'),
+      };
+
+      function sanitizeSegment(value = '') {
+        return value.trim().replace(/\s+/g, ' ');
+      }
+
+      function setFeedback(message, tone = '') {
+        elements.feedback.textContent = message;
+        elements.feedback.className = `feedback${tone ? ` ${tone}` : ''}`;
+      }
+
+      function getSearchContext() {
+        const query = sanitizeSegment(elements.query.value);
+        const category = sanitizeSegment(elements.category.value);
+        const neighborhood = sanitizeSegment(elements.neighborhood.value);
+        const city = sanitizeSegment(elements.city.value);
+        const regionState = sanitizeSegment(elements.regionState.value).toUpperCase();
+        const radius = `${elements.radius.value} km`;
+        const maxPrice = elements.maxPrice.value ? `até R$ ${elements.maxPrice.value}` : '';
+
+        const textParts = [query, category, neighborhood, city, regionState, maxPrice, radius].filter(Boolean);
+
+        return {
+          query: textParts.join(' '),
+          category,
+          neighborhood,
+          city,
+          regionState,
+          radius,
+          maxPrice,
+        };
+      }
+
+      function updatePreview() {
+        const context = getSearchContext();
+        elements.searchPreview.value = context.query;
+        return context;
+      }
+
+      function syncRadiusLabel() {
+        elements.radiusSummary.textContent = `${elements.radius.value} km`;
+      }
+
+      function syncAddressFields() {
+        elements.neighborhood.value = state.address.neighborhood;
+        elements.city.value = state.address.city;
+        elements.regionState.value = state.address.state;
+
+        const summary = [state.address.neighborhood, state.address.city, state.address.state]
+          .filter(Boolean)
+          .join(', ');
+
+        elements.locationSummary.textContent = summary || 'Localização detectada sem bairro definido';
+      }
+
+      async function reverseGeocode(latitude, longitude) {
+        const endpoint = new URL('https://nominatim.openstreetmap.org/reverse');
+        endpoint.search = new URLSearchParams({
+          format: 'jsonv2',
+          lat: latitude,
+          lon: longitude,
+          'accept-language': 'pt-BR',
+        }).toString();
+
+        const response = await fetch(endpoint, {
+          headers: {
+            Accept: 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error('Falha ao converter coordenadas em endereço.');
+        }
+
+        const data = await response.json();
+        const address = data.address || {};
+
+        state.address = {
+          neighborhood:
+            address.suburb || address.neighbourhood || address.quarter || address.city_district || '',
+          city: address.city || address.town || address.village || address.municipality || '',
+          state: (address.state_code || '').toUpperCase(),
+        };
+
+        syncAddressFields();
+      }
+
+      function renderPlatforms() {
+        const context = updatePreview();
+        elements.platformList.innerHTML = '';
+
+        platforms.forEach((platform) => {
+          const node = elements.platformTemplate.content.cloneNode(true);
+          const wrapper = node.querySelector('.platform-card');
+          const link = node.querySelector('.platform-link');
+          const copyButton = node.querySelector('.copy-link-button');
+          const checkbox = node.querySelector('.platform-checkbox');
+          const url = platform.buildUrl(context);
+
+          wrapper.dataset.platformKey = platform.key;
+          checkbox.dataset.platformKey = platform.key;
+          checkbox.checked = state.selectedPlatforms.has(platform.key);
+
+          node.querySelector('.platform-badge').textContent = platform.badge;
+          node.querySelector('h3').textContent = platform.name;
+          node.querySelector('.platform-description').textContent = platform.description;
+          node.querySelector('.platform-meta').textContent = `Consulta: ${context.query}`;
+
+          link.href = url;
+          link.textContent = `Abrir em ${platform.name}`;
+
+          checkbox.addEventListener('change', () => {
+            if (checkbox.checked) {
+              state.selectedPlatforms.add(platform.key);
+            } else {
+              state.selectedPlatforms.delete(platform.key);
+            }
+          });
+
+          copyButton.addEventListener('click', async () => {
+            try {
+              await navigator.clipboard.writeText(url);
+              setFeedback(`Link de ${platform.name} copiado.`, 'success');
+            } catch (error) {
+              console.error(error);
+              setFeedback('Não foi possível copiar o link automaticamente.', 'warning');
+            }
+          });
+
+          elements.platformList.appendChild(node);
+        });
+      }
+
+      function handleLocationSuccess(position) {
+        const { latitude, longitude } = position.coords;
+        state.coordinates = { latitude, longitude };
+
+        elements.gpsStatus.textContent = 'GPS autorizado';
+        elements.coordinatesSummary.textContent = `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
+        elements.locationSummary.textContent = 'Localizando bairro...';
+        setFeedback('GPS liberado. Buscando seu endereço aproximado...', 'success');
+
+        reverseGeocode(latitude, longitude)
+          .then(() => {
+            renderPlatforms();
+            setFeedback('Localização aplicada à busca com sucesso.', 'success');
+          })
+          .catch((error) => {
+            console.error(error);
+            elements.gpsStatus.textContent = 'GPS ok, endereço parcial';
+            elements.locationSummary.textContent = 'Não foi possível identificar bairro/cidade automaticamente';
+            renderPlatforms();
+            setFeedback('Seu GPS foi lido, mas o endereço não pôde ser convertido automaticamente.', 'warning');
+          });
+      }
+
+      function handleLocationError(error) {
+        const reasons = {
+          1: 'Permissão negada para usar o GPS.',
+          2: 'Posição indisponível no momento.',
+          3: 'Tempo limite excedido ao buscar sua localização.',
+        };
+
+        elements.gpsStatus.textContent = reasons[error.code] || 'Não foi possível acessar o GPS.';
+        setFeedback('Você ainda pode preencher bairro, cidade e estado manualmente.', 'warning');
+      }
+
+      function requestLocation() {
+        if (!navigator.geolocation) {
+          elements.gpsStatus.textContent = 'Geolocalização não suportada neste navegador.';
+          setFeedback('Este navegador não suporta geolocalização.', 'warning');
+          return;
+        }
+
+        elements.gpsStatus.textContent = 'Solicitando acesso ao GPS...';
+        setFeedback('Aguardando autorização do navegador para usar sua localização...', 'warning');
+
+        navigator.geolocation.getCurrentPosition(handleLocationSuccess, handleLocationError, {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 300000,
+        });
+      }
+
+      async function copySearchQuery() {
+        updatePreview();
+
+        try {
+          await navigator.clipboard.writeText(elements.searchPreview.value);
+          setFeedback('Consulta copiada para a área de transferência.', 'success');
+        } catch (error) {
+          console.error(error);
+          setFeedback('Não foi possível copiar a consulta automaticamente.', 'warning');
+        }
+      }
+
+      function openSelectedSearches() {
+        const selectedLinks = [...document.querySelectorAll('.platform-checkbox:checked')]
+          .map((checkbox) => checkbox.closest('.platform-card')?.querySelector('.platform-link'))
+          .filter(Boolean);
+
+        if (selectedLinks.length === 0) {
+          setFeedback('Selecione pelo menos uma plataforma para abrir.', 'warning');
+          return;
+        }
+
+        selectedLinks.forEach((link) => window.open(link.href, '_blank', 'noopener,noreferrer'));
+        setFeedback(`Abrindo ${selectedLinks.length} plataforma(s). Se houver bloqueio, use os botões individuais.`, 'success');
+      }
+
+      [
+        elements.query,
+        elements.category,
+        elements.neighborhood,
+        elements.city,
+        elements.regionState,
+        elements.maxPrice,
+      ].forEach((input) => {
+        input.addEventListener('input', renderPlatforms);
+        input.addEventListener('change', renderPlatforms);
+      });
+
+      elements.radius.addEventListener('input', () => {
+        syncRadiusLabel();
+        renderPlatforms();
+      });
+
+      elements.detectLocation.addEventListener('click', requestLocation);
+      elements.copySearch.addEventListener('click', copySearchQuery);
+      elements.openAllSearches.addEventListener('click', openSelectedSearches);
+
+      elements.form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        renderPlatforms();
+        setFeedback('Resultados atualizados com base nos filtros atuais.', 'success');
+      });
+
+      syncRadiusLabel();
+      renderPlatforms();
+      setFeedback('Preencha os filtros ou use sua localização para começar.', 'warning');
+    </script>
+  </body>
+</html>
