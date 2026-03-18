@@ -461,34 +461,55 @@
     </template>
 
     <script>
+      function sanitizeSegment(value = '') {
+        return value.trim().replace(/\s+/g, ' ');
+      }
+
+      function normalizeSearchSlug(value = '') {
+        return sanitizeSegment(value)
+          .normalize('NFD')
+          .replace(/[̀-ͯ]/g, '')
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-+|-+$/g, '');
+      }
+
+      function buildSiteSearchUrl(domain, query, pathHint = '') {
+        const searchTerms = [query, pathHint].filter(Boolean).join(' ');
+        return `https://www.google.com/search?q=${encodeURIComponent(`site:${domain} ${searchTerms}`)}`;
+      }
+
       const platforms = [
         {
           key: 'facebook',
           name: 'Facebook Marketplace',
-          badge: 'Rede social',
-          description: 'Bom para móveis, eletrônicos e usados próximos da sua região.',
-          buildUrl: ({ query }) => `https://www.facebook.com/marketplace/search/?query=${encodeURIComponent(query)}`,
+          badge: 'Busca validada',
+          description: 'Abre uma busca do Google filtrada para anúncios do Facebook Marketplace.',
+          buildUrl: ({ query }) => buildSiteSearchUrl('facebook.com', query, 'marketplace'),
         },
         {
           key: 'olx',
           name: 'OLX',
-          badge: 'Classificados grátis',
-          description: 'Busca ampla por usados com bastante oferta local e filtro de preço.',
-          buildUrl: ({ query }) => `https://www.olx.com.br/brasil?q=${encodeURIComponent(query)}`,
+          badge: 'Busca validada',
+          description: 'Abre uma busca do Google filtrada para anúncios publicados na OLX.',
+          buildUrl: ({ query }) => buildSiteSearchUrl('olx.com.br', query),
         },
         {
           key: 'mercado-livre',
           name: 'Mercado Livre',
-          badge: 'Marketplace',
-          description: 'Ótimo para comparar preço e descobrir anúncios com retirada próxima.',
-          buildUrl: ({ query }) => `https://lista.mercadolivre.com.br/${encodeURIComponent(query)}`,
+          badge: 'Busca validada',
+          description: 'Abre uma busca do Google filtrada para resultados do Mercado Livre.',
+          buildUrl: ({ query }) => buildSiteSearchUrl('mercadolivre.com.br', query),
         },
         {
           key: 'webmotors',
           name: 'Webmotors',
           badge: 'Veículos',
-          description: 'Mais útil para buscas de carros, motos e peças usadas.',
-          buildUrl: ({ query }) => `https://www.webmotors.com.br/carros-usados/estoque?search=${encodeURIComponent(query)}`,
+          description: 'Busca veículos e peças no Webmotors com uma URL atual e estável.',
+          buildUrl: ({ query }) => {
+            const slug = normalizeSearchSlug(query) || 'carros-usados';
+            return `https://www.webmotors.com.br/comprar/carros/estoque?lkid=1000&str=${encodeURIComponent(slug)}`;
+          },
         },
         {
           key: 'google',
@@ -531,9 +552,6 @@
         platformTemplate: document.querySelector('#platform-template'),
       };
 
-      function sanitizeSegment(value = '') {
-        return value.trim().replace(/\s+/g, ' ');
-      }
 
       function setFeedback(message, tone = '') {
         elements.feedback.textContent = message;
@@ -635,7 +653,7 @@
           node.querySelector('.platform-badge').textContent = platform.badge;
           node.querySelector('h3').textContent = platform.name;
           node.querySelector('.platform-description').textContent = platform.description;
-          node.querySelector('.platform-meta').textContent = `Consulta: ${context.query}`;
+          node.querySelector('.platform-meta').textContent = `Link pronto: ${url}`;
 
           link.href = url;
           link.textContent = `Abrir em ${platform.name}`;
