@@ -8,7 +8,7 @@ Aplicação web estática em arquivo único para encontrar ofertas de produtos u
 - Detecção de geolocalização via navegador.
 - Preenchimento automático de bairro, cidade e estado com reverse geocoding.
 - Preview do termo de busca gerado automaticamente.
-- Busca rápida em plataformas como Facebook Marketplace, OLX, Webmotors, Mercado Livre e Google.
+- Busca rápida em plataformas como Facebook Marketplace, OLX, Webmotors, Mercado Livre e Google, com links validados.
 - Seleção de plataformas, cópia da consulta e cópia de links individuais.
 - Ajuste manual do bairro, raio e preço máximo para refinar a pesquisa.
 - Interface responsiva pronta para abrir em celular.
@@ -30,6 +30,7 @@ Aplicação web estática em arquivo único para encontrar ofertas de produtos u
 7. Abra individualmente as plataformas ou use **Abrir buscas selecionadas**.
 
 ## Observações
+- Parte das plataformas abre uma busca validada no Google para evitar links quebrados ou rotas antigas dos marketplaces.
 - O Facebook Marketplace e outros sites podem exigir login antes de exibir resultados.
 - A precisão do bairro depende da permissão de GPS e da base de endereços disponível.
 - Geolocalização costuma funcionar melhor em `localhost` ou `https`.
