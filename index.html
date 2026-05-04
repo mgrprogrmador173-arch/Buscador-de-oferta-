@@ -786,4 +786,137 @@
     loop();
   </script>
 </body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Top Racer 3D Mini</title>
+    <style>
+      :root { --bg:#020617; --panel:#0f172a; --border:#1e293b; --text:#e2e8f0; --muted:#94a3b8; --accent:#38bdf8; }
+      *{box-sizing:border-box}
+      body{margin:0;min-height:100vh;font-family:Segoe UI,Tahoma,sans-serif;background:radial-gradient(circle at top,#0b1228,var(--bg));color:var(--text);display:grid;place-items:center;padding:16px}
+      .layout{width:min(1150px,100%);display:grid;gap:16px;grid-template-columns:1fr 300px}
+      .card{background:rgba(15,23,42,.93);border:1px solid var(--border);border-radius:16px;padding:14px}
+      .game-wrap{position:relative}
+      canvas{width:100%;aspect-ratio:16/9;border-radius:12px;border:1px solid #334155;background:#020617;display:block}
+      h1{margin:0 0 6px;font-size:1.25rem} p{margin:0;color:var(--muted)}
+      .hud{display:grid;gap:10px;margin-top:12px;grid-template-columns:repeat(3,1fr)} .item{background:#0b1220;border:1px solid #1f2937;border-radius:10px;padding:8px}
+      .label{font-size:.78rem;color:var(--muted)} .value{font-size:1.05rem;font-weight:700}
+      .panel{display:grid;gap:12px;align-content:start}
+      button,.ctl{background:linear-gradient(135deg,#0ea5e9,var(--accent));color:#082f49;border:none;border-radius:10px;padding:10px;font-weight:800;cursor:pointer}
+      ul{margin:0;padding-left:20px;color:var(--muted)} .small{font-size:.85rem}
+      .touch{position:absolute;inset:0;pointer-events:none}
+      .pad{position:absolute;bottom:14px;display:grid;gap:8px;pointer-events:auto}
+      .pad.left{left:14px;grid-template-columns:repeat(2,58px)} .pad.right{right:14px;grid-template-columns:repeat(2,58px)}
+      .ctl{width:58px;height:58px;border-radius:50%;opacity:.18;backdrop-filter:blur(2px);display:grid;place-items:center;user-select:none}
+      .ctl:active{opacity:.5}
+      @media (hover:none){.ctl{opacity:.28}}
+      @media (max-width:920px){.layout{grid-template-columns:1fr}}
+    </style>
+  </head>
+  <body>
+    <main class="layout">
+      <section class="card">
+        <h1>Top Racer 3D Mini (estilo Top Gear)</h1>
+        <p>Pseudo-3D com relevo, horizonte, carros escalando em profundidade, som dinâmico e botões touch invisíveis.</p>
+        <div class="game-wrap">
+          <canvas id="game" width="960" height="540"></canvas>
+          <div class="touch" id="touch">
+            <div class="pad left">
+              <button class="ctl" data-key="ArrowLeft">◀</button>
+              <button class="ctl" data-key="ArrowRight">▶</button>
+            </div>
+            <div class="pad right">
+              <button class="ctl" data-key="ArrowDown">▼</button>
+              <button class="ctl" data-key="ArrowUp">▲</button>
+            </div>
+          </div>
+        </div>
+        <div class="hud">
+          <div class="item"><div class="label">Velocidade</div><div class="value" id="speed">0 km/h</div></div>
+          <div class="item"><div class="label">Distância</div><div class="value" id="distance">0 km</div></div>
+          <div class="item"><div class="label">Combustível</div><div class="value" id="fuel">100%</div></div>
+        </div>
+      </section>
+      <aside class="card panel">
+        <button id="start">Iniciar / Reiniciar</button>
+        <button id="mute">Som: ON</button>
+        <div class="small"><strong>Controles:</strong> teclado ou botões na tela. Evite tráfego, colete combustível e mantenha rotação alta.</div>
+        <div><div class="label">Recorde local</div><div class="value" id="best">0 km</div></div>
+      </aside>
+    </main>
+    <script>
+      const canvas = document.getElementById('game'), ctx = canvas.getContext('2d');
+      const speedEl = document.getElementById('speed'), distanceEl = document.getElementById('distance'), fuelEl = document.getElementById('fuel');
+      const bestEl = document.getElementById('best'), startBtn = document.getElementById('start'), muteBtn = document.getElementById('mute');
+      const keys = {}, road = {x:canvas.width/2, width:420, curve:0, target:0}, player={lane:0,speed:0,max:330,w:68,h:112};
+      let traffic=[], fuels=[], gameOver=true, distance=0, fuel=100, frame=0, best=Number(localStorage.getItem('top_racer_best')||0), muted=false;
+      bestEl.textContent = `${best.toFixed(1)} km`;
+
+      const audio = {ctx:null, osc:null, gain:null};
+      function initAudio(){
+        if(audio.ctx) return;
+        audio.ctx = new (window.AudioContext||window.webkitAudioContext)();
+        audio.osc = audio.ctx.createOscillator();
+        audio.gain = audio.ctx.createGain();
+        audio.osc.type = 'sawtooth'; audio.osc.frequency.value = 70; audio.gain.gain.value = 0;
+        audio.osc.connect(audio.gain); audio.gain.connect(audio.ctx.destination); audio.osc.start();
+      }
+      function engineSound(){ if(!audio.ctx||muted) return; audio.gain.gain.value=Math.min(0.08,player.speed/5000); audio.osc.frequency.value=65+player.speed*1.9; }
+      function beep(freq=420,dur=0.08){ if(!audio.ctx||muted) return; const o=audio.ctx.createOscillator(),g=audio.ctx.createGain(); o.frequency.value=freq; o.connect(g); g.connect(audio.ctx.destination); g.gain.value=0.08; o.start(); g.gain.exponentialRampToValueAtTime(0.001,audio.ctx.currentTime+dur); o.stop(audio.ctx.currentTime+dur); }
+
+      function resetGame(){ traffic=[]; fuels=[]; player.lane=0; player.speed=0; gameOver=false; distance=0; fuel=100; frame=0; initAudio(); if(audio.ctx.state==='suspended') audio.ctx.resume(); }
+      function spawnTraffic(){ const lane=(-1+Math.floor(Math.random()*3))*95; traffic.push({lane,z:1,w:60,h:105,speed:90+Math.random()*120,color:`hsl(${Math.random()*360},80%,58%)`}); }
+      function spawnFuel(){ const lane=(-1+Math.floor(Math.random()*3))*95; fuels.push({lane,z:1,size:28}); }
+
+      function project(lane,z){ const p=1/z, y=canvas.height*(0.2+0.74*(1-p)); const x=road.x + lane*p + road.curve*(1-p)*220; return {x,y,scale:p}; }
+      function drawWorld(t){
+        const sky=ctx.createLinearGradient(0,0,0,canvas.height); sky.addColorStop(0,'#1e3a8a'); sky.addColorStop(1,'#1e293b'); ctx.fillStyle=sky; ctx.fillRect(0,0,canvas.width,canvas.height);
+        for(let i=0;i<8;i++){const m=i/8, y=canvas.height*(.2+m*.8); ctx.fillStyle=i%2?'#14532d':'#166534'; ctx.fillRect(0,y,canvas.width,40);}
+        road.target += (Math.random()-.5)*.07; road.target=Math.max(-1.3,Math.min(1.3,road.target)); road.curve += (road.target-road.curve)*.02;
+        for(let s=70;s>1;s--){ const z=s/16, p=project(0,z), w=road.width/z; ctx.fillStyle=s%2?'#111827':'#1f2937'; ctx.fillRect(p.x-w/2,p.y,w,10+300/z/60); if(s%8===0){ctx.fillStyle='#f8fafc'; ctx.fillRect(p.x-5,p.y,10,18);} }
+      }
+      function drawCar(x,y,w,h,color){ const g=ctx.createLinearGradient(x-w/2,y-h/2,x+w/2,y+h/2); g.addColorStop(0,color); g.addColorStop(1,'#111827'); ctx.fillStyle=g; ctx.fillRect(x-w/2,y-h/2,w,h); ctx.fillStyle='rgba(0,0,0,.2)'; ctx.fillRect(x-w/2+6,y-h/2+12,w-12,h-24); ctx.fillStyle='#dbeafe'; ctx.fillRect(x-w*.28,y-h*.34,w*.56,h*.2); }
+      function hit(a,b){ return Math.abs(a.x-b.x)<(a.w+b.w)/2 && Math.abs(a.y-b.y)<(a.h+b.h)/2; }
+
+      function update(){
+        frame++; if(keys.ArrowUp) player.speed+=2.8; else player.speed-=1.1; if(keys.ArrowDown) player.speed-=3.3; player.speed=Math.max(0,Math.min(player.max,player.speed));
+        if(keys.ArrowLeft) player.lane-=5; if(keys.ArrowRight) player.lane+=5; player.lane=Math.max(-170,Math.min(170,player.lane));
+        fuel -= 0.013 + player.speed/30000; distance += player.speed/9000;
+        if(frame%58===0) spawnTraffic(); if(frame%320===0) spawnFuel();
+        const advance = 0.016 + player.speed/18000;
+        traffic.forEach(c=>c.z-=advance*(1+c.speed/250)); fuels.forEach(f=>f.z-=advance);
+        traffic=traffic.filter(c=>c.z>.08); fuels=fuels.filter(f=>f.z>.08);
+        const pp=project(player.lane,0.13), pbox={x:pp.x,y:pp.y,w:player.w,h:player.h};
+        for(const c of traffic){ const p=project(c.lane,c.z), box={x:p.x,y:p.y,w:c.w*p.scale*2.4,h:c.h*p.scale*2.4}; if(hit(pbox,box)){player.speed*=.52; fuel-=12; c.z=0; beep(120,0.12);} }
+        for(const f of fuels){ const p=project(f.lane,f.z), box={x:p.x,y:p.y,w:f.size*p.scale*2.8,h:f.size*p.scale*2.8}; if(hit(pbox,box)){fuel=Math.min(100,fuel+30); f.z=0; beep(700,0.09);} }
+        if(fuel<=0){gameOver=true; best=Math.max(best,distance); localStorage.setItem('top_racer_best', String(best)); beep(80,0.25);} engineSound();
+      }
+
+      function render(){
+        drawWorld(frame);
+        const all=[];
+        traffic.forEach(c=>all.push({...project(c.lane,c.z),type:'car',obj:c,depth:c.z})); fuels.forEach(f=>all.push({...project(f.lane,f.z),type:'fuel',obj:f,depth:f.z}));
+        all.sort((a,b)=>b.depth-a.depth);
+        for(const it of all){ if(it.type==='car'){drawCar(it.x,it.y,it.obj.w*it.scale*2.4,it.obj.h*it.scale*2.4,it.obj.color);} else {const s=it.obj.size*it.scale*2.8; ctx.fillStyle='#fbbf24'; ctx.fillRect(it.x-s/2,it.y-s/2,s,s); ctx.fillStyle='#7c2d12'; ctx.fillRect(it.x-s*.2,it.y-s*.7,s*.4,s*.2);} }
+        const p=project(player.lane,0.13); drawCar(p.x,p.y,player.w,player.h,'#f43f5e');
+        if(gameOver){ctx.fillStyle='rgba(2,6,23,.65)'; ctx.fillRect(0,0,canvas.width,canvas.height); ctx.fillStyle='#fff'; ctx.font='bold 42px Segoe UI'; ctx.fillText('FIM DA CORRIDA',canvas.width/2-170,canvas.height/2-20); ctx.font='24px Segoe UI'; ctx.fillStyle='#34d399'; ctx.fillText(`Distância: ${distance.toFixed(1)} km`,canvas.width/2-95,canvas.height/2+24);}
+        speedEl.textContent=`${player.speed.toFixed(0)} km/h`; distanceEl.textContent=`${distance.toFixed(1)} km`; fuelEl.textContent=`${Math.max(0,fuel).toFixed(0)}%`; bestEl.textContent=`${best.toFixed(1)} km`;
+      }
+      function loop(){ if(!gameOver) update(); render(); requestAnimationFrame(loop); }
+      window.addEventListener('keydown',e=>keys[e.key]=true); window.addEventListener('keyup',e=>keys[e.key]=false);
+      function resetInput(){ Object.keys(keys).forEach(k=>keys[k]=false); }
+      document.querySelectorAll('[data-key]').forEach(btn=>{
+        const k=btn.dataset.key;
+        btn.addEventListener('pointerdown',e=>{e.preventDefault();btn.setPointerCapture?.(e.pointerId);keys[k]=true;initAudio();});
+        btn.addEventListener('pointerup',e=>{e.preventDefault();keys[k]=false;});
+        btn.addEventListener('pointercancel',()=>{keys[k]=false;});
+        btn.addEventListener('pointerleave',()=>{keys[k]=false;});
+      });
+      window.addEventListener('blur', resetInput);
+      document.addEventListener('visibilitychange',()=>{if(document.hidden) resetInput();});
+      startBtn.addEventListener('click',()=>{resetInput();resetGame();});
+      muteBtn.addEventListener('click',()=>{muted=!muted; muteBtn.textContent=`Som: ${muted?'OFF':'ON'}`; if(audio.gain&&muted) audio.gain.gain.value=0;});
+      render(); loop();
+    </script>
+  </body>
 </html>
