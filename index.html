@@ -3,790 +3,206 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Buscador de Ofertas no Meu Bairro</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
+    <title>Contador de Calorias</title>
     <style>
       :root {
-        color-scheme: dark;
-        --bg: #081120;
-        --bg-soft: #0f1b31;
-        --card: rgba(15, 27, 49, 0.92);
-        --card-border: rgba(129, 160, 255, 0.2);
-        --text: #f5f7ff;
-        --muted: #a9b6d3;
-        --primary: #66e3ff;
-        --primary-strong: #19b8dd;
-        --secondary: #7d8cff;
-        --success: #6effa7;
-        --warning: #ffd56f;
-        --shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+        --bg: #0f172a;
+        --card: #111827;
+        --muted: #94a3b8;
+        --text: #e2e8f0;
+        --primary: #22d3ee;
+        --success: #34d399;
+        --danger: #fb7185;
       }
-
-      * {
-        box-sizing: border-box;
-      }
-
+      * { box-sizing: border-box; }
       body {
         margin: 0;
         min-height: 100vh;
-        font-family: 'Inter', system-ui, sans-serif;
+        font-family: Arial, sans-serif;
+        background: linear-gradient(160deg, #020617, var(--bg));
         color: var(--text);
-        background:
-          radial-gradient(circle at top, rgba(102, 227, 255, 0.15), transparent 30%),
-          linear-gradient(180deg, #081120 0%, #040914 100%);
       }
-
-      .layout {
-        width: min(1120px, calc(100% - 32px));
-        margin: 0 auto;
-        padding: 40px 0 56px;
-        display: grid;
-        gap: 20px;
-      }
-
+      .container { width: min(940px, calc(100% - 24px)); margin: 24px auto; display: grid; gap: 16px; }
       .card {
-        background: var(--card);
-        border: 1px solid var(--card-border);
-        border-radius: 24px;
-        padding: 24px;
-        box-shadow: var(--shadow);
-        backdrop-filter: blur(12px);
-      }
-
-      .hero,
-      .hero-copy {
-        display: grid;
-        gap: 24px;
-      }
-
-      .tag,
-      .platform-badge {
-        display: inline-flex;
-        align-items: center;
-        width: fit-content;
-        padding: 6px 12px;
-        border-radius: 999px;
-        background: rgba(102, 227, 255, 0.12);
-        color: var(--primary);
-        font-size: 0.85rem;
-        font-weight: 700;
-        letter-spacing: 0.03em;
-        text-transform: uppercase;
-      }
-
-      h1,
-      h2,
-      h3,
-      p {
-        margin-top: 0;
-      }
-
-      h1 {
-        font-size: clamp(2rem, 4vw, 4rem);
-        line-height: 1.05;
-        margin-bottom: 16px;
-        max-width: 14ch;
-      }
-
-      .subtitle,
-      .section-heading p,
-      .platform-description,
-      .platform-meta,
-      label,
-      .feedback {
-        color: var(--muted);
-      }
-
-      .section-heading-inline {
-        display: flex;
-        justify-content: space-between;
-        gap: 16px;
-        align-items: flex-start;
-      }
-
-      .hero-actions,
-      .inline-actions,
-      .platform-actions,
-      .platform-topline {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 12px;
-        align-items: center;
-      }
-
-      button,
-      .platform-link,
-      select,
-      textarea,
-      input {
-        font: inherit;
-      }
-
-      button,
-      .platform-link {
-        border: none;
-        border-radius: 14px;
-        padding: 14px 18px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
-      }
-
-      button:hover,
-      .platform-link:hover {
-        transform: translateY(-1px);
-      }
-
-      .primary-button {
-        background: linear-gradient(135deg, var(--primary), var(--primary-strong));
-        color: #02131a;
-      }
-
-      .secondary-button,
-      .ghost-button {
-        background: rgba(125, 140, 255, 0.15);
-        color: var(--text);
-        border: 1px solid rgba(125, 140, 255, 0.3);
-      }
-
-      .ghost-button {
-        padding: 12px 16px;
-      }
-
-      .status-grid,
-      .form-grid,
-      .platform-list {
-        display: grid;
-        gap: 16px;
-      }
-
-      .status-grid {
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      }
-
-      .status-card,
-      .platform-card {
-        background: var(--bg-soft);
-        border: 1px solid rgba(129, 160, 255, 0.16);
-        border-radius: 18px;
+        background: rgba(17, 24, 39, 0.95);
+        border: 1px solid #1f2937;
+        border-radius: 16px;
         padding: 18px;
       }
-
-      .status-label {
-        display: block;
-        margin-bottom: 10px;
-        color: var(--muted);
-        font-size: 0.92rem;
-      }
-
-      .form-grid {
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      }
-
-      .full-width {
-        grid-column: 1 / -1;
-      }
-
-      label {
-        display: grid;
-        gap: 10px;
-        font-weight: 600;
-      }
-
-      input,
-      select,
-      textarea {
-        width: 100%;
-        border: 1px solid rgba(169, 182, 211, 0.22);
-        background: rgba(8, 17, 32, 0.72);
+      h1,h2,p { margin-top: 0; }
+      .grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+      label { display: grid; gap: 8px; color: var(--muted); font-weight: 700; font-size: 0.92rem; }
+      input, select, button {
+        border: 1px solid #334155;
+        background: #0b1220;
         color: var(--text);
-        border-radius: 14px;
-        padding: 14px;
+        border-radius: 10px;
+        padding: 10px;
+        font: inherit;
       }
-
-      textarea {
-        resize: vertical;
-      }
-
-      input[type='range'] {
-        padding: 0;
-      }
-
-      .platform-list {
-        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      }
-
-      .platform-card {
-        display: grid;
-        gap: 16px;
-      }
-
-      .platform-toggle {
-        display: inline-flex;
-        gap: 10px;
-        align-items: center;
-      }
-
-      .platform-toggle input {
-        width: 18px;
-        height: 18px;
-        margin: 0;
-      }
-
-      .platform-card h3 {
-        margin: 0 0 8px;
-      }
-
-      .platform-meta {
-        font-size: 0.95rem;
-      }
-
-      .platform-link {
-        flex: 1;
-        text-decoration: none;
-        text-align: center;
-        background: rgba(110, 255, 167, 0.12);
-        color: var(--success);
-        border: 1px solid rgba(110, 255, 167, 0.18);
-      }
-
-      .feedback {
-        min-height: 24px;
-        font-weight: 600;
-      }
-
-      .feedback.success {
-        color: var(--success);
-      }
-
-      .feedback.warning {
-        color: var(--warning);
-      }
-
-      .tips ul {
-        margin: 0;
-        padding-left: 20px;
-        color: var(--muted);
-        display: grid;
-        gap: 8px;
-      }
-
-      @media (max-width: 640px) {
-        .layout {
-          width: min(100% - 20px, 1120px);
-          padding-top: 20px;
-        }
-
-        .card {
-          padding: 18px;
-          border-radius: 20px;
-        }
-
-        .section-heading-inline {
-          flex-direction: column;
-        }
-      }
+      button { cursor: pointer; font-weight: 700; }
+      .btn-primary { background: linear-gradient(135deg, #06b6d4, var(--primary)); color: #082f49; border: none; }
+      .btn-danger { background: rgba(251, 113, 133, 0.12); color: var(--danger); border-color: rgba(251,113,133,.4); }
+      table { width: 100%; border-collapse: collapse; }
+      th, td { text-align: left; padding: 10px; border-bottom: 1px solid #1f2937; }
+      .muted { color: var(--muted); }
+      .summary { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+      .summary .item { background: #0b1220; border-radius: 12px; padding: 12px; border: 1px solid #1e293b; }
+      .summary strong { color: var(--success); font-size: 1.2rem; }
+      .right { text-align: right; }
     </style>
   </head>
   <body>
-    <main class="layout">
-      <section class="hero card">
-        <div class="hero-copy">
-          <p class="tag">Ofertas e usados perto de você</p>
-          <h1>Busque anúncios de usados no seu bairro usando a localização do celular.</h1>
-          <p class="subtitle">
-            O app usa o GPS do navegador para sugerir bairro, cidade e estado, monta uma busca
-            local mais inteligente e gera atalhos para marketplaces e sites gratuitos de anúncio.
-          </p>
-        </div>
-
-        <div class="hero-actions">
-          <button id="detect-location" class="primary-button" type="button">
-            Usar minha localização
-          </button>
-          <button id="open-all-searches" class="secondary-button" type="button">
-            Abrir buscas selecionadas
-          </button>
-        </div>
-
-        <div class="status-grid">
-          <article class="status-card">
-            <span class="status-label">Status do GPS</span>
-            <strong id="gps-status">Aguardando permissão</strong>
-          </article>
-          <article class="status-card">
-            <span class="status-label">Região detectada</span>
-            <strong id="location-summary">Nenhuma localização definida</strong>
-          </article>
-          <article class="status-card">
-            <span class="status-label">Raio da busca</span>
-            <strong id="radius-summary">5 km</strong>
-          </article>
-          <article class="status-card">
-            <span class="status-label">Coordenadas</span>
-            <strong id="coordinates-summary">Ainda não disponíveis</strong>
-          </article>
-        </div>
+    <main class="container">
+      <section class="card">
+        <h1>Contador de Calorias de Alimentos</h1>
+        <p class="muted">Adicione alimentos consumidos ao longo do dia e acompanhe calorias totais e macronutrientes.</p>
       </section>
 
-      <section class="controls card">
-        <div class="section-heading">
-          <h2>Monte sua busca local</h2>
-          <p>
-            Defina o item, informe preço máximo se quiser e refine a região manualmente caso o GPS
-            não encontre exatamente o seu bairro.
-          </p>
-        </div>
-
-        <form id="search-form" class="form-grid">
-          <label>
-            O que você procura?
-            <input
-              type="text"
-              id="query"
-              name="query"
-              placeholder="Ex.: bicicleta, sofá, geladeira, iPhone"
-              value="bicicleta usada"
-              required
-            />
+      <section class="card">
+        <h2>Novo alimento</h2>
+        <form id="food-form" class="grid">
+          <label>Alimento
+            <input id="food-name" required placeholder="Ex.: Arroz cozido" />
           </label>
-
-          <label>
-            Categoria
-            <select id="category" name="category">
-              <option value="usado">Usados em geral</option>
-              <option value="móveis">Móveis</option>
-              <option value="eletrônicos">Eletrônicos</option>
-              <option value="celulares">Celulares</option>
-              <option value="veículos">Veículos</option>
-            </select>
+          <label>Quantidade (g)
+            <input id="food-grams" type="number" min="1" value="100" required />
           </label>
-
-          <label>
-            Bairro / região
-            <input
-              type="text"
-              id="neighborhood"
-              name="neighborhood"
-              placeholder="Ex.: Mooca, Centro, Copacabana"
-            />
+          <label>Calorias por 100g
+            <input id="food-kcal" type="number" min="0" value="130" required />
           </label>
-
-          <label>
-            Cidade
-            <input type="text" id="city" name="city" placeholder="Ex.: São Paulo" />
+          <label>Proteína por 100g (g)
+            <input id="food-protein" type="number" min="0" step="0.1" value="2.5" required />
           </label>
-
-          <label>
-            Estado
-            <input type="text" id="state" name="state" placeholder="Ex.: SP" maxlength="2" />
+          <label>Carboidrato por 100g (g)
+            <input id="food-carbs" type="number" min="0" step="0.1" value="28" required />
           </label>
-
-          <label>
-            Raio da busca
-            <input type="range" id="radius" name="radius" min="1" max="30" value="5" />
+          <label>Gordura por 100g (g)
+            <input id="food-fat" type="number" min="0" step="0.1" value="0.3" required />
           </label>
-
-          <label>
-            Faixa de preço máxima
-            <input type="number" id="max-price" name="max-price" min="0" placeholder="Ex.: 1500" />
-          </label>
-
-          <label class="full-width">
-            Termo gerado automaticamente
-            <textarea id="search-preview" rows="3" readonly></textarea>
-          </label>
-
-          <div class="full-width inline-actions">
-            <button id="copy-search" class="secondary-button" type="button">Copiar consulta</button>
-            <button class="primary-button" type="submit">Atualizar resultados</button>
+          <div>
+            <button type="submit" class="btn-primary">Adicionar alimento</button>
           </div>
         </form>
       </section>
 
-      <section class="results card">
-        <div class="section-heading section-heading-inline">
-          <div>
-            <h2>Plataformas recomendadas</h2>
-            <p>
-              Escolha os sites que quer abrir. Cada card recebe o mesmo termo de busca local.
-            </p>
-          </div>
-          <p id="feedback" class="feedback" aria-live="polite"></p>
+      <section class="card">
+        <h2>Resumo diário</h2>
+        <div class="summary">
+          <div class="item"><div class="muted">Calorias totais</div><strong id="total-kcal">0 kcal</strong></div>
+          <div class="item"><div class="muted">Proteínas</div><strong id="total-protein">0 g</strong></div>
+          <div class="item"><div class="muted">Carboidratos</div><strong id="total-carbs">0 g</strong></div>
+          <div class="item"><div class="muted">Gorduras</div><strong id="total-fat">0 g</strong></div>
         </div>
-
-        <div id="platform-list" class="platform-list"></div>
       </section>
 
-      <section class="tips card">
-        <div class="section-heading">
-          <h2>Dicas para encontrar ofertas melhores</h2>
-        </div>
-        <ul>
-          <li>Compare o mesmo produto em mais de uma plataforma antes de fechar negócio.</li>
-          <li>Prefira anúncios com fotos reais, descrição completa e vendedor ativo recentemente.</li>
-          <li>Use um raio menor para achar oportunidades de retirada rápida no próprio bairro.</li>
-          <li>Abra as buscas em `localhost` ou `https` para permitir o uso do GPS sem bloqueio.</li>
-        </ul>
+      <section class="card">
+        <h2>Alimentos adicionados</h2>
+        <p id="empty-state" class="muted">Nenhum alimento adicionado.</p>
+        <table id="food-table" hidden>
+          <thead>
+            <tr>
+              <th>Alimento</th><th>Qtd (g)</th><th>kcal</th><th>P (g)</th><th>C (g)</th><th>G (g)</th><th class="right">Ação</th>
+            </tr>
+          </thead>
+          <tbody id="food-body"></tbody>
+        </table>
       </section>
     </main>
 
-    <template id="platform-template">
-      <article class="platform-card">
-        <div class="platform-topline">
-          <label class="platform-toggle">
-            <input class="platform-checkbox" type="checkbox" checked />
-            <span>Selecionar</span>
-          </label>
-          <p class="platform-badge"></p>
-        </div>
-
-        <div>
-          <h3></h3>
-          <p class="platform-description"></p>
-        </div>
-
-        <div class="platform-meta"></div>
-
-        <div class="platform-actions">
-          <a class="platform-link" target="_blank" rel="noreferrer">Abrir busca</a>
-          <button class="ghost-button copy-link-button" type="button">Copiar link</button>
-        </div>
-      </article>
-    </template>
-
     <script>
-      function sanitizeSegment(value = '') {
-        return value.trim().replace(/\s+/g, ' ');
-      }
+      const foods = [];
+      const form = document.getElementById('food-form');
+      const body = document.getElementById('food-body');
+      const table = document.getElementById('food-table');
+      const emptyState = document.getElementById('empty-state');
 
-      function normalizeSearchSlug(value = '') {
-        return sanitizeSegment(value)
-          .normalize('NFD')
-          .replace(/[̀-ͯ]/g, '')
-          .toLowerCase()
-          .replace(/[^a-z0-9]+/g, '-')
-          .replace(/^-+|-+$/g, '');
-      }
-
-      function buildSiteSearchUrl(domain, query, pathHint = '') {
-        const searchTerms = [query, pathHint].filter(Boolean).join(' ');
-        return `https://www.google.com/search?q=${encodeURIComponent(`site:${domain} ${searchTerms}`)}`;
-      }
-
-      const platforms = [
-        {
-          key: 'facebook',
-          name: 'Facebook Marketplace',
-          badge: 'Busca validada',
-          description: 'Abre uma busca do Google filtrada para anúncios do Facebook Marketplace.',
-          buildUrl: ({ query }) => buildSiteSearchUrl('facebook.com', query, 'marketplace'),
-        },
-        {
-          key: 'olx',
-          name: 'OLX',
-          badge: 'Busca validada',
-          description: 'Abre uma busca do Google filtrada para anúncios publicados na OLX.',
-          buildUrl: ({ query }) => buildSiteSearchUrl('olx.com.br', query),
-        },
-        {
-          key: 'mercado-livre',
-          name: 'Mercado Livre',
-          badge: 'Busca validada',
-          description: 'Abre uma busca do Google filtrada para resultados do Mercado Livre.',
-          buildUrl: ({ query }) => buildSiteSearchUrl('mercadolivre.com.br', query),
-        },
-        {
-          key: 'webmotors',
-          name: 'Webmotors',
-          badge: 'Veículos',
-          description: 'Busca veículos e peças no Webmotors com uma URL atual e estável.',
-          buildUrl: ({ query }) => {
-            const slug = normalizeSearchSlug(query) || 'carros-usados';
-            return `https://www.webmotors.com.br/comprar/carros/estoque?lkid=1000&str=${encodeURIComponent(slug)}`;
-          },
-        },
-        {
-          key: 'google',
-          name: 'Google',
-          badge: 'Busca ampla',
-          description: 'Procura em sites de anúncio gratuito, classificados locais e grupos públicos.',
-          buildUrl: ({ query }) => `https://www.google.com/search?q=${encodeURIComponent(query)}`,
-        },
-      ];
-
-      const state = {
-        coordinates: null,
-        selectedPlatforms: new Set(platforms.map((platform) => platform.key)),
-        address: {
-          neighborhood: '',
-          city: '',
-          state: '',
-        },
+      const totalsEls = {
+        kcal: document.getElementById('total-kcal'),
+        protein: document.getElementById('total-protein'),
+        carbs: document.getElementById('total-carbs'),
+        fat: document.getElementById('total-fat'),
       };
 
-      const elements = {
-        detectLocation: document.querySelector('#detect-location'),
-        openAllSearches: document.querySelector('#open-all-searches'),
-        copySearch: document.querySelector('#copy-search'),
-        form: document.querySelector('#search-form'),
-        query: document.querySelector('#query'),
-        category: document.querySelector('#category'),
-        neighborhood: document.querySelector('#neighborhood'),
-        city: document.querySelector('#city'),
-        regionState: document.querySelector('#state'),
-        radius: document.querySelector('#radius'),
-        maxPrice: document.querySelector('#max-price'),
-        searchPreview: document.querySelector('#search-preview'),
-        gpsStatus: document.querySelector('#gps-status'),
-        locationSummary: document.querySelector('#location-summary'),
-        coordinatesSummary: document.querySelector('#coordinates-summary'),
-        radiusSummary: document.querySelector('#radius-summary'),
-        feedback: document.querySelector('#feedback'),
-        platformList: document.querySelector('#platform-list'),
-        platformTemplate: document.querySelector('#platform-template'),
-      };
-
-
-      function setFeedback(message, tone = '') {
-        elements.feedback.textContent = message;
-        elements.feedback.className = `feedback${tone ? ` ${tone}` : ''}`;
+      function toNumber(id) {
+        return Number(document.getElementById(id).value);
       }
 
-      function getSearchContext() {
-        const query = sanitizeSegment(elements.query.value);
-        const category = sanitizeSegment(elements.category.value);
-        const neighborhood = sanitizeSegment(elements.neighborhood.value);
-        const city = sanitizeSegment(elements.city.value);
-        const regionState = sanitizeSegment(elements.regionState.value).toUpperCase();
-        const radius = `${elements.radius.value} km`;
-        const maxPrice = elements.maxPrice.value ? `até R$ ${elements.maxPrice.value}` : '';
+      function recalcTotals() {
+        const totals = foods.reduce((acc, item) => {
+          acc.kcal += item.kcal;
+          acc.protein += item.protein;
+          acc.carbs += item.carbs;
+          acc.fat += item.fat;
+          return acc;
+        }, { kcal: 0, protein: 0, carbs: 0, fat: 0 });
 
-        const textParts = [query, category, neighborhood, city, regionState, maxPrice, radius].filter(Boolean);
-
-        return {
-          query: textParts.join(' '),
-          category,
-          neighborhood,
-          city,
-          regionState,
-          radius,
-          maxPrice,
-        };
+        totalsEls.kcal.textContent = `${totals.kcal.toFixed(0)} kcal`;
+        totalsEls.protein.textContent = `${totals.protein.toFixed(1)} g`;
+        totalsEls.carbs.textContent = `${totals.carbs.toFixed(1)} g`;
+        totalsEls.fat.textContent = `${totals.fat.toFixed(1)} g`;
       }
 
-      function updatePreview() {
-        const context = getSearchContext();
-        elements.searchPreview.value = context.query;
-        return context;
-      }
+      function render() {
+        body.innerHTML = '';
 
-      function syncRadiusLabel() {
-        elements.radiusSummary.textContent = `${elements.radius.value} km`;
-      }
-
-      function syncAddressFields() {
-        elements.neighborhood.value = state.address.neighborhood;
-        elements.city.value = state.address.city;
-        elements.regionState.value = state.address.state;
-
-        const summary = [state.address.neighborhood, state.address.city, state.address.state]
-          .filter(Boolean)
-          .join(', ');
-
-        elements.locationSummary.textContent = summary || 'Localização detectada sem bairro definido';
-      }
-
-      async function reverseGeocode(latitude, longitude) {
-        const endpoint = new URL('https://nominatim.openstreetmap.org/reverse');
-        endpoint.search = new URLSearchParams({
-          format: 'jsonv2',
-          lat: latitude,
-          lon: longitude,
-          'accept-language': 'pt-BR',
-        }).toString();
-
-        const response = await fetch(endpoint, {
-          headers: {
-            Accept: 'application/json',
-          },
+        foods.forEach((food, index) => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${food.name}</td>
+            <td>${food.grams}</td>
+            <td>${food.kcal.toFixed(0)}</td>
+            <td>${food.protein.toFixed(1)}</td>
+            <td>${food.carbs.toFixed(1)}</td>
+            <td>${food.fat.toFixed(1)}</td>
+            <td class="right"><button class="btn-danger" data-remove="${index}">Remover</button></td>
+          `;
+          body.appendChild(tr);
         });
 
-        if (!response.ok) {
-          throw new Error('Falha ao converter coordenadas em endereço.');
-        }
-
-        const data = await response.json();
-        const address = data.address || {};
-
-        state.address = {
-          neighborhood:
-            address.suburb || address.neighbourhood || address.quarter || address.city_district || '',
-          city: address.city || address.town || address.village || address.municipality || '',
-          state: (address.state_code || '').toUpperCase(),
-        };
-
-        syncAddressFields();
+        table.hidden = foods.length === 0;
+        emptyState.hidden = foods.length > 0;
+        recalcTotals();
       }
 
-      function renderPlatforms() {
-        const context = updatePreview();
-        elements.platformList.innerHTML = '';
-
-        platforms.forEach((platform) => {
-          const node = elements.platformTemplate.content.cloneNode(true);
-          const wrapper = node.querySelector('.platform-card');
-          const link = node.querySelector('.platform-link');
-          const copyButton = node.querySelector('.copy-link-button');
-          const checkbox = node.querySelector('.platform-checkbox');
-          const url = platform.buildUrl(context);
-
-          wrapper.dataset.platformKey = platform.key;
-          checkbox.dataset.platformKey = platform.key;
-          checkbox.checked = state.selectedPlatforms.has(platform.key);
-
-          node.querySelector('.platform-badge').textContent = platform.badge;
-          node.querySelector('h3').textContent = platform.name;
-          node.querySelector('.platform-description').textContent = platform.description;
-          node.querySelector('.platform-meta').textContent = `Link pronto: ${url}`;
-
-          link.href = url;
-          link.textContent = `Abrir em ${platform.name}`;
-
-          checkbox.addEventListener('change', () => {
-            if (checkbox.checked) {
-              state.selectedPlatforms.add(platform.key);
-            } else {
-              state.selectedPlatforms.delete(platform.key);
-            }
-          });
-
-          copyButton.addEventListener('click', async () => {
-            try {
-              await navigator.clipboard.writeText(url);
-              setFeedback(`Link de ${platform.name} copiado.`, 'success');
-            } catch (error) {
-              console.error(error);
-              setFeedback('Não foi possível copiar o link automaticamente.', 'warning');
-            }
-          });
-
-          elements.platformList.appendChild(node);
-        });
-      }
-
-      function handleLocationSuccess(position) {
-        const { latitude, longitude } = position.coords;
-        state.coordinates = { latitude, longitude };
-
-        elements.gpsStatus.textContent = 'GPS autorizado';
-        elements.coordinatesSummary.textContent = `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
-        elements.locationSummary.textContent = 'Localizando bairro...';
-        setFeedback('GPS liberado. Buscando seu endereço aproximado...', 'success');
-
-        reverseGeocode(latitude, longitude)
-          .then(() => {
-            renderPlatforms();
-            setFeedback('Localização aplicada à busca com sucesso.', 'success');
-          })
-          .catch((error) => {
-            console.error(error);
-            elements.gpsStatus.textContent = 'GPS ok, endereço parcial';
-            elements.locationSummary.textContent = 'Não foi possível identificar bairro/cidade automaticamente';
-            renderPlatforms();
-            setFeedback('Seu GPS foi lido, mas o endereço não pôde ser convertido automaticamente.', 'warning');
-          });
-      }
-
-      function handleLocationError(error) {
-        const reasons = {
-          1: 'Permissão negada para usar o GPS.',
-          2: 'Posição indisponível no momento.',
-          3: 'Tempo limite excedido ao buscar sua localização.',
-        };
-
-        elements.gpsStatus.textContent = reasons[error.code] || 'Não foi possível acessar o GPS.';
-        setFeedback('Você ainda pode preencher bairro, cidade e estado manualmente.', 'warning');
-      }
-
-      function requestLocation() {
-        if (!navigator.geolocation) {
-          elements.gpsStatus.textContent = 'Geolocalização não suportada neste navegador.';
-          setFeedback('Este navegador não suporta geolocalização.', 'warning');
-          return;
-        }
-
-        elements.gpsStatus.textContent = 'Solicitando acesso ao GPS...';
-        setFeedback('Aguardando autorização do navegador para usar sua localização...', 'warning');
-
-        navigator.geolocation.getCurrentPosition(handleLocationSuccess, handleLocationError, {
-          enableHighAccuracy: true,
-          timeout: 10000,
-          maximumAge: 300000,
-        });
-      }
-
-      async function copySearchQuery() {
-        updatePreview();
-
-        try {
-          await navigator.clipboard.writeText(elements.searchPreview.value);
-          setFeedback('Consulta copiada para a área de transferência.', 'success');
-        } catch (error) {
-          console.error(error);
-          setFeedback('Não foi possível copiar a consulta automaticamente.', 'warning');
-        }
-      }
-
-      function openSelectedSearches() {
-        const selectedLinks = [...document.querySelectorAll('.platform-checkbox:checked')]
-          .map((checkbox) => checkbox.closest('.platform-card')?.querySelector('.platform-link'))
-          .filter(Boolean);
-
-        if (selectedLinks.length === 0) {
-          setFeedback('Selecione pelo menos uma plataforma para abrir.', 'warning');
-          return;
-        }
-
-        selectedLinks.forEach((link) => window.open(link.href, '_blank', 'noopener,noreferrer'));
-        setFeedback(`Abrindo ${selectedLinks.length} plataforma(s). Se houver bloqueio, use os botões individuais.`, 'success');
-      }
-
-      [
-        elements.query,
-        elements.category,
-        elements.neighborhood,
-        elements.city,
-        elements.regionState,
-        elements.maxPrice,
-      ].forEach((input) => {
-        input.addEventListener('input', renderPlatforms);
-        input.addEventListener('change', renderPlatforms);
+      body.addEventListener('click', (event) => {
+        const button = event.target.closest('button[data-remove]');
+        if (!button) return;
+        const index = Number(button.dataset.remove);
+        foods.splice(index, 1);
+        render();
       });
 
-      elements.radius.addEventListener('input', () => {
-        syncRadiusLabel();
-        renderPlatforms();
-      });
-
-      elements.detectLocation.addEventListener('click', requestLocation);
-      elements.copySearch.addEventListener('click', copySearchQuery);
-      elements.openAllSearches.addEventListener('click', openSelectedSearches);
-
-      elements.form.addEventListener('submit', (event) => {
+      form.addEventListener('submit', (event) => {
         event.preventDefault();
-        renderPlatforms();
-        setFeedback('Resultados atualizados com base nos filtros atuais.', 'success');
-      });
+        const name = document.getElementById('food-name').value.trim();
+        const grams = toNumber('food-grams');
+        const kcalPer100 = toNumber('food-kcal');
+        const proteinPer100 = toNumber('food-protein');
+        const carbsPer100 = toNumber('food-carbs');
+        const fatPer100 = toNumber('food-fat');
 
-      syncRadiusLabel();
-      renderPlatforms();
-      setFeedback('Preencha os filtros ou use sua localização para começar.', 'warning');
+        if (!name || grams <= 0) return;
+
+        const factor = grams / 100;
+
+        foods.push({
+          name,
+          grams,
+          kcal: kcalPer100 * factor,
+          protein: proteinPer100 * factor,
+          carbs: carbsPer100 * factor,
+          fat: fatPer100 * factor,
+        });
+
+        form.reset();
+        document.getElementById('food-grams').value = 100;
+        document.getElementById('food-kcal').value = 130;
+        document.getElementById('food-protein').value = 2.5;
+        document.getElementById('food-carbs').value = 28;
+        document.getElementById('food-fat').value = 0.3;
+        render();
+      });
     </script>
   </body>
 </html>
