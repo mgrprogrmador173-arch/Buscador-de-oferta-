@@ -1,15 +1,16 @@
-# Contador de Calorias de Alimentos
+# Top Racer 3D Mini (inspirado em Top Gear)
 
-Aplicação web estática (arquivo único) para registrar alimentos consumidos e calcular calorias e macronutrientes do dia.
+Minigame de corrida em HTML5 Canvas com visual pseudo-3D, som dinâmico de motor e controles por teclado + botões touch invisíveis na tela.
 
-## Funcionalidades
-- Adição de alimentos com quantidade em gramas.
-- Cálculo automático de calorias, proteínas, carboidratos e gorduras por item.
-- Soma total diária atualizada em tempo real.
-- Remoção de itens da lista para corrigir o diário alimentar.
+## Novidades
+- Renderização pseudo-3D com profundidade (escala por distância).
+- Cenário com horizonte e sensação de relevo/velocidade.
+- Som procedural (WebAudio): motor contínuo + efeitos de colisão/coleta.
+- Botão de mute e botões de controle sobre o canvas para mobile.
+- Tráfego, pickups de combustível, HUD e recorde local.
 
-## Como usar
+## Como jogar
 1. Abra `index.html` no navegador.
-2. Preencha nome do alimento e valores por 100g.
-3. Clique em **Adicionar alimento**.
-4. Acompanhe o resumo diário e remova itens quando necessário.
+2. Clique em **Iniciar / Reiniciar**.
+3. Use setas do teclado ou botões na tela.
+4. Evite colisões e colete combustível para bater o recorde.
