@@ -14,3 +14,7 @@ Minigame de corrida em HTML5 Canvas com visual pseudo-3D, som dinâmico de motor
 2. Clique em **Iniciar / Reiniciar**.
 3. Use setas do teclado ou botões na tela.
 4. Evite colisões e colete combustível para bater o recorde.
+
+## Correções de conflito de controle
+- Eventos touch/mouse duplicados foram consolidados em Pointer Events para evitar entradas repetidas.
+- Adicionado reset de entradas em troca de aba/perda de foco para não travar comandos pressionados.
