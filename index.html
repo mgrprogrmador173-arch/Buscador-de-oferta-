@@ -3,206 +3,302 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Contador de Calorias</title>
+    <title>Top Racer Mini — Corrida Arcade</title>
     <style>
       :root {
-        --bg: #0f172a;
-        --card: #111827;
-        --muted: #94a3b8;
+        --bg: #020617;
+        --panel: #0f172a;
+        --border: #1e293b;
         --text: #e2e8f0;
-        --primary: #22d3ee;
-        --success: #34d399;
-        --danger: #fb7185;
+        --muted: #94a3b8;
+        --accent: #38bdf8;
+        --good: #34d399;
+        --warn: #f59e0b;
       }
       * { box-sizing: border-box; }
       body {
         margin: 0;
         min-height: 100vh;
-        font-family: Arial, sans-serif;
-        background: linear-gradient(160deg, #020617, var(--bg));
+        font-family: "Segoe UI", Tahoma, sans-serif;
+        background: radial-gradient(circle at top, #0b1228, var(--bg));
         color: var(--text);
+        display: grid;
+        place-items: center;
+        padding: 16px;
       }
-      .container { width: min(940px, calc(100% - 24px)); margin: 24px auto; display: grid; gap: 16px; }
+      .layout {
+        width: min(1100px, 100%);
+        display: grid;
+        gap: 16px;
+        grid-template-columns: 1fr 290px;
+      }
       .card {
-        background: rgba(17, 24, 39, 0.95);
-        border: 1px solid #1f2937;
+        background: rgba(15, 23, 42, 0.92);
+        border: 1px solid var(--border);
         border-radius: 16px;
-        padding: 18px;
+        padding: 14px;
       }
-      h1,h2,p { margin-top: 0; }
-      .grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
-      label { display: grid; gap: 8px; color: var(--muted); font-weight: 700; font-size: 0.92rem; }
-      input, select, button {
+      canvas {
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        border-radius: 12px;
         border: 1px solid #334155;
-        background: #0b1220;
-        color: var(--text);
+        background: #020617;
+        display: block;
+      }
+      h1 { margin: 0 0 6px; font-size: 1.25rem; }
+      p { margin: 0; color: var(--muted); }
+      .hud { display: grid; gap: 10px; margin-top: 12px; grid-template-columns: repeat(3, 1fr); }
+      .hud .item { background: #0b1220; border: 1px solid #1f2937; border-radius: 10px; padding: 8px; }
+      .label { font-size: 0.78rem; color: var(--muted); }
+      .value { font-size: 1.05rem; font-weight: 700; }
+      .panel { display: grid; gap: 12px; align-content: start; }
+      button {
+        background: linear-gradient(135deg, #0ea5e9, var(--accent));
+        color: #082f49;
+        border: none;
         border-radius: 10px;
         padding: 10px;
-        font: inherit;
+        font-weight: 800;
+        cursor: pointer;
       }
-      button { cursor: pointer; font-weight: 700; }
-      .btn-primary { background: linear-gradient(135deg, #06b6d4, var(--primary)); color: #082f49; border: none; }
-      .btn-danger { background: rgba(251, 113, 133, 0.12); color: var(--danger); border-color: rgba(251,113,133,.4); }
-      table { width: 100%; border-collapse: collapse; }
-      th, td { text-align: left; padding: 10px; border-bottom: 1px solid #1f2937; }
-      .muted { color: var(--muted); }
-      .summary { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
-      .summary .item { background: #0b1220; border-radius: 12px; padding: 12px; border: 1px solid #1e293b; }
-      .summary strong { color: var(--success); font-size: 1.2rem; }
-      .right { text-align: right; }
+      ul { margin: 0; padding-left: 20px; color: var(--muted); }
+      .small { font-size: 0.85rem; }
+      @media (max-width: 920px) { .layout { grid-template-columns: 1fr; } }
     </style>
   </head>
   <body>
-    <main class="container">
+    <main class="layout">
       <section class="card">
-        <h1>Contador de Calorias de Alimentos</h1>
-        <p class="muted">Adicione alimentos consumidos ao longo do dia e acompanhe calorias totais e macronutrientes.</p>
-      </section>
-
-      <section class="card">
-        <h2>Novo alimento</h2>
-        <form id="food-form" class="grid">
-          <label>Alimento
-            <input id="food-name" required placeholder="Ex.: Arroz cozido" />
-          </label>
-          <label>Quantidade (g)
-            <input id="food-grams" type="number" min="1" value="100" required />
-          </label>
-          <label>Calorias por 100g
-            <input id="food-kcal" type="number" min="0" value="130" required />
-          </label>
-          <label>Proteína por 100g (g)
-            <input id="food-protein" type="number" min="0" step="0.1" value="2.5" required />
-          </label>
-          <label>Carboidrato por 100g (g)
-            <input id="food-carbs" type="number" min="0" step="0.1" value="28" required />
-          </label>
-          <label>Gordura por 100g (g)
-            <input id="food-fat" type="number" min="0" step="0.1" value="0.3" required />
-          </label>
-          <div>
-            <button type="submit" class="btn-primary">Adicionar alimento</button>
-          </div>
-        </form>
-      </section>
-
-      <section class="card">
-        <h2>Resumo diário</h2>
-        <div class="summary">
-          <div class="item"><div class="muted">Calorias totais</div><strong id="total-kcal">0 kcal</strong></div>
-          <div class="item"><div class="muted">Proteínas</div><strong id="total-protein">0 g</strong></div>
-          <div class="item"><div class="muted">Carboidratos</div><strong id="total-carbs">0 g</strong></div>
-          <div class="item"><div class="muted">Gorduras</div><strong id="total-fat">0 g</strong></div>
+        <h1>Top Racer Mini (inspirado em Top Gear)</h1>
+        <p>Arcade 2D com sensação retrô: desvie de carros, administre combustível e faça a maior distância possível.</p>
+        <canvas id="game" width="960" height="540"></canvas>
+        <div class="hud">
+          <div class="item"><div class="label">Velocidade</div><div class="value" id="speed">0 km/h</div></div>
+          <div class="item"><div class="label">Distância</div><div class="value" id="distance">0 km</div></div>
+          <div class="item"><div class="label">Combustível</div><div class="value" id="fuel">100%</div></div>
         </div>
       </section>
 
-      <section class="card">
-        <h2>Alimentos adicionados</h2>
-        <p id="empty-state" class="muted">Nenhum alimento adicionado.</p>
-        <table id="food-table" hidden>
-          <thead>
-            <tr>
-              <th>Alimento</th><th>Qtd (g)</th><th>kcal</th><th>P (g)</th><th>C (g)</th><th>G (g)</th><th class="right">Ação</th>
-            </tr>
-          </thead>
-          <tbody id="food-body"></tbody>
-        </table>
-      </section>
+      <aside class="card panel">
+        <button id="start">Iniciar / Reiniciar corrida</button>
+        <div>
+          <strong>Controles</strong>
+          <ul class="small">
+            <li>← → para virar</li>
+            <li>↑ acelera</li>
+            <li>↓ freia</li>
+          </ul>
+        </div>
+        <div class="small">
+          <strong>Dica:</strong> pegue os galões para recuperar combustível. Colisões tiram velocidade e combustível.
+        </div>
+        <div>
+          <div class="label">Recorde local</div>
+          <div class="value" id="best">0 km</div>
+        </div>
+      </aside>
     </main>
 
     <script>
-      const foods = [];
-      const form = document.getElementById('food-form');
-      const body = document.getElementById('food-body');
-      const table = document.getElementById('food-table');
-      const emptyState = document.getElementById('empty-state');
+      const canvas = document.getElementById('game');
+      const ctx = canvas.getContext('2d');
+      const speedEl = document.getElementById('speed');
+      const distanceEl = document.getElementById('distance');
+      const fuelEl = document.getElementById('fuel');
+      const bestEl = document.getElementById('best');
+      const startBtn = document.getElementById('start');
 
-      const totalsEls = {
-        kcal: document.getElementById('total-kcal'),
-        protein: document.getElementById('total-protein'),
-        carbs: document.getElementById('total-carbs'),
-        fat: document.getElementById('total-fat'),
-      };
+      const keys = {};
+      const road = { x: canvas.width / 2, width: 420, curve: 0, curveTarget: 0 };
+      const player = { laneOffset: 0, y: canvas.height - 120, speed: 0, maxSpeed: 310, width: 68, height: 110 };
+      let traffic = [];
+      let fuels = [];
+      let gameOver = true;
+      let distance = 0;
+      let fuel = 100;
+      let frame = 0;
+      let best = Number(localStorage.getItem('top_racer_best') || 0);
+      bestEl.textContent = `${best.toFixed(1)} km`;
 
-      function toNumber(id) {
-        return Number(document.getElementById(id).value);
+      function resetGame() {
+        traffic = [];
+        fuels = [];
+        player.laneOffset = 0;
+        player.speed = 0;
+        gameOver = false;
+        distance = 0;
+        fuel = 100;
+        frame = 0;
       }
 
-      function recalcTotals() {
-        const totals = foods.reduce((acc, item) => {
-          acc.kcal += item.kcal;
-          acc.protein += item.protein;
-          acc.carbs += item.carbs;
-          acc.fat += item.fat;
-          return acc;
-        }, { kcal: 0, protein: 0, carbs: 0, fat: 0 });
+      function spawnTraffic() {
+        const lane = (-1 + Math.floor(Math.random() * 3)) * 95;
+        traffic.push({ x: lane, y: -120, w: 60, h: 105, speed: 90 + Math.random() * 90, color: `hsl(${Math.random()*360},80%,58%)` });
+      }
 
-        totalsEls.kcal.textContent = `${totals.kcal.toFixed(0)} kcal`;
-        totalsEls.protein.textContent = `${totals.protein.toFixed(1)} g`;
-        totalsEls.carbs.textContent = `${totals.carbs.toFixed(1)} g`;
-        totalsEls.fat.textContent = `${totals.fat.toFixed(1)} g`;
+      function spawnFuel() {
+        const lane = (-1 + Math.floor(Math.random() * 3)) * 95;
+        fuels.push({ x: lane, y: -80, size: 28 });
+      }
+
+      function drawBackground(t) {
+        const sky = ctx.createLinearGradient(0, 0, 0, canvas.height);
+        sky.addColorStop(0, '#1e3a8a');
+        sky.addColorStop(1, '#1e293b');
+        ctx.fillStyle = sky;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = '#065f46';
+        for (let i = 0; i < 16; i++) {
+          const y = (i * 70 + (t * 0.8) % 70);
+          ctx.fillRect(0, y, canvas.width, 40);
+        }
+      }
+
+      function drawRoad(t) {
+        road.curveTarget += (Math.random() - 0.5) * 0.2;
+        road.curveTarget = Math.max(-1.4, Math.min(1.4, road.curveTarget));
+        road.curve += (road.curveTarget - road.curve) * 0.015;
+        const cx = road.x + Math.sin(t * 0.0022) * 90 * road.curve;
+
+        ctx.fillStyle = '#0f172a';
+        ctx.beginPath();
+        ctx.moveTo(cx - road.width / 2 - 140, canvas.height);
+        ctx.lineTo(cx + road.width / 2 + 140, canvas.height);
+        ctx.lineTo(cx + 180, 0);
+        ctx.lineTo(cx - 180, 0);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.strokeStyle = '#f8fafc';
+        ctx.lineWidth = 6;
+        for (let i = 0; i < 12; i++) {
+          const p = (i * 80 + (t * (player.speed / 180)) % 80);
+          const y = canvas.height - p;
+          ctx.beginPath();
+          ctx.moveTo(cx, y);
+          ctx.lineTo(cx, y - 40);
+          ctx.stroke();
+        }
+
+        return cx;
+      }
+
+      function drawCar(x, y, w, h, color) {
+        ctx.fillStyle = color;
+        ctx.fillRect(x - w / 2, y - h / 2, w, h);
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(x - w * 0.3, y - h * 0.35, w * 0.6, h * 0.24);
+        ctx.fillStyle = '#f8fafc';
+        ctx.fillRect(x - w * 0.42, y - h * 0.44, w * 0.15, h * 0.1);
+        ctx.fillRect(x + w * 0.27, y - h * 0.44, w * 0.15, h * 0.1);
+      }
+
+      function intersects(a, b) {
+        return Math.abs(a.x - b.x) < (a.w + b.w) / 2 && Math.abs(a.y - b.y) < (a.h + b.h) / 2;
+      }
+
+      function update() {
+        frame++;
+        if (keys.ArrowUp) player.speed += 2.8;
+        else player.speed -= 1.2;
+        if (keys.ArrowDown) player.speed -= 3.1;
+        player.speed = Math.max(0, Math.min(player.maxSpeed, player.speed));
+
+        if (keys.ArrowLeft) player.laneOffset -= 5;
+        if (keys.ArrowRight) player.laneOffset += 5;
+        player.laneOffset = Math.max(-170, Math.min(170, player.laneOffset));
+
+        fuel -= 0.012 + player.speed / 30000;
+        distance += player.speed / 9000;
+
+        if (frame % 55 === 0) spawnTraffic();
+        if (frame % 340 === 0) spawnFuel();
+
+        const scroll = 5 + player.speed / 22;
+
+        traffic.forEach(car => car.y += scroll + car.speed / 30);
+        fuels.forEach(g => g.y += scroll);
+
+        traffic = traffic.filter(car => car.y < canvas.height + 130);
+        fuels = fuels.filter(g => g.y < canvas.height + 90);
+
+        const playerBox = { x: road.x + player.laneOffset, y: player.y, w: player.width, h: player.height };
+
+        for (const car of traffic) {
+          const enemy = { x: road.x + car.x + road.curve * (car.y - 200) * 0.08, y: car.y, w: car.w, h: car.h };
+          if (intersects(playerBox, enemy)) {
+            player.speed *= 0.58;
+            fuel -= 12;
+            car.y = canvas.height + 200;
+          }
+        }
+
+        for (const g of fuels) {
+          const item = { x: road.x + g.x + road.curve * (g.y - 200) * 0.08, y: g.y, w: g.size, h: g.size };
+          if (intersects(playerBox, item)) {
+            fuel = Math.min(100, fuel + 28);
+            g.y = canvas.height + 200;
+          }
+        }
+
+        if (fuel <= 0) {
+          gameOver = true;
+          best = Math.max(best, distance);
+          localStorage.setItem('top_racer_best', String(best));
+        }
       }
 
       function render() {
-        body.innerHTML = '';
+        drawBackground(frame);
+        drawRoad(frame);
 
-        foods.forEach((food, index) => {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td>${food.name}</td>
-            <td>${food.grams}</td>
-            <td>${food.kcal.toFixed(0)}</td>
-            <td>${food.protein.toFixed(1)}</td>
-            <td>${food.carbs.toFixed(1)}</td>
-            <td>${food.fat.toFixed(1)}</td>
-            <td class="right"><button class="btn-danger" data-remove="${index}">Remover</button></td>
-          `;
-          body.appendChild(tr);
-        });
+        for (const car of traffic) {
+          const x = road.x + car.x + road.curve * (car.y - 200) * 0.08;
+          drawCar(x, car.y, car.w, car.h, car.color);
+        }
 
-        table.hidden = foods.length === 0;
-        emptyState.hidden = foods.length > 0;
-        recalcTotals();
+        for (const g of fuels) {
+          const x = road.x + g.x + road.curve * (g.y - 200) * 0.08;
+          ctx.fillStyle = '#fbbf24';
+          ctx.fillRect(x - 14, g.y - 14, 28, 28);
+          ctx.fillStyle = '#7c2d12';
+          ctx.fillRect(x - 5, g.y - 20, 10, 8);
+        }
+
+        drawCar(road.x + player.laneOffset, player.y, player.width, player.height, '#f43f5e');
+
+        if (gameOver) {
+          ctx.fillStyle = 'rgba(2,6,23,.68)';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.fillStyle = '#f8fafc';
+          ctx.font = 'bold 42px Segoe UI';
+          ctx.fillText('FIM DA CORRIDA', canvas.width / 2 - 170, canvas.height / 2 - 20);
+          ctx.font = '24px Segoe UI';
+          ctx.fillStyle = '#34d399';
+          ctx.fillText(`Distância: ${distance.toFixed(1)} km`, canvas.width / 2 - 95, canvas.height / 2 + 24);
+        }
+
+        speedEl.textContent = `${player.speed.toFixed(0)} km/h`;
+        distanceEl.textContent = `${distance.toFixed(1)} km`;
+        fuelEl.textContent = `${Math.max(0, fuel).toFixed(0)}%`;
+        fuelEl.style.color = fuel > 35 ? 'var(--good)' : fuel > 15 ? 'var(--warn)' : '#fb7185';
+        bestEl.textContent = `${best.toFixed(1)} km`;
       }
 
-      body.addEventListener('click', (event) => {
-        const button = event.target.closest('button[data-remove]');
-        if (!button) return;
-        const index = Number(button.dataset.remove);
-        foods.splice(index, 1);
+      function loop() {
+        if (!gameOver) update();
         render();
-      });
+        requestAnimationFrame(loop);
+      }
 
-      form.addEventListener('submit', (event) => {
-        event.preventDefault();
-        const name = document.getElementById('food-name').value.trim();
-        const grams = toNumber('food-grams');
-        const kcalPer100 = toNumber('food-kcal');
-        const proteinPer100 = toNumber('food-protein');
-        const carbsPer100 = toNumber('food-carbs');
-        const fatPer100 = toNumber('food-fat');
+      window.addEventListener('keydown', (e) => keys[e.key] = true);
+      window.addEventListener('keyup', (e) => keys[e.key] = false);
+      startBtn.addEventListener('click', resetGame);
 
-        if (!name || grams <= 0) return;
-
-        const factor = grams / 100;
-
-        foods.push({
-          name,
-          grams,
-          kcal: kcalPer100 * factor,
-          protein: proteinPer100 * factor,
-          carbs: carbsPer100 * factor,
-          fat: fatPer100 * factor,
-        });
-
-        form.reset();
-        document.getElementById('food-grams').value = 100;
-        document.getElementById('food-kcal').value = 130;
-        document.getElementById('food-protein').value = 2.5;
-        document.getElementById('food-carbs').value = 28;
-        document.getElementById('food-fat').value = 0.3;
-        render();
-      });
+      render();
+      loop();
     </script>
   </body>
 </html>
