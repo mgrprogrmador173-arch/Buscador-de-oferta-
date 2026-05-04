@@ -1,20 +1,20 @@
-# Top Racer Mini (inspirado em Top Gear)
+# Top Racer 3D Mini (inspirado em Top Gear)
 
-Mini game de corrida arcade em HTML5 Canvas, jogável direto no navegador, com visual retrô, pista com curvas dinâmicas, tráfego, combustível e recorde local.
+Minigame de corrida em HTML5 Canvas com visual pseudo-3D, som dinâmico de motor e controles por teclado + botões touch invisíveis na tela.
 
-## Funcionalidades
-- Direção com teclado (setas).
-- Sensação de velocidade com movimento de pista e cenário.
-- Tráfego com colisão e penalidade de velocidade/combustível.
-- Itens de combustível coletáveis.
-- HUD com velocidade, distância e combustível em tempo real.
-- Recorde salvo em `localStorage`.
+## Novidades
+- Renderização pseudo-3D com profundidade (escala por distância).
+- Cenário com horizonte e sensação de relevo/velocidade.
+- Som procedural (WebAudio): motor contínuo + efeitos de colisão/coleta.
+- Botão de mute e botões de controle sobre o canvas para mobile.
+- Tráfego, pickups de combustível, HUD e recorde local.
 
 ## Como jogar
 1. Abra `index.html` no navegador.
-2. Clique em **Iniciar / Reiniciar corrida**.
-3. Use:
-   - `←` e `→` para mover o carro.
-   - `↑` para acelerar.
-   - `↓` para frear.
-4. Desvie dos carros e colete galões para sobreviver o máximo possível.
+2. Clique em **Iniciar / Reiniciar**.
+3. Use setas do teclado ou botões na tela.
+4. Evite colisões e colete combustível para bater o recorde.
+
+## Correções de conflito de controle
+- Eventos touch/mouse duplicados foram consolidados em Pointer Events para evitar entradas repetidas.
+- Adicionado reset de entradas em troca de aba/perda de foco para não travar comandos pressionados.
