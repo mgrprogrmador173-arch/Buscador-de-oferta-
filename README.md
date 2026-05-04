@@ -1,15 +1,10 @@
-# Contador de Calorias de Alimentos
+# Retro Mobile Racer
 
-Aplicação web estática (arquivo único) para registrar alimentos consumidos e calcular calorias e macronutrientes do dia.
+Jogo de corrida arcade com visual retrô/pseudo-3D, HUD completo e controles móveis na tela.
 
-## Funcionalidades
-- Adição de alimentos com quantidade em gramas.
-- Cálculo automático de calorias, proteínas, carboidratos e gorduras por item.
-- Soma total diária atualizada em tempo real.
-- Remoção de itens da lista para corrigir o diário alimentar.
-
-## Como usar
+## Como jogar
 1. Abra `index.html` no navegador.
-2. Preencha nome do alimento e valores por 100g.
-3. Clique em **Adicionar alimento**.
-4. Acompanhe o resumo diário e remova itens quando necessário.
+2. Clique em **INICIAR CORRIDA**.
+3. O carro acelera sozinho.
+4. Use `←` e `→` (teclado) ou os botões na tela para desviar do tráfego.
+5. Colisões aumentam o dano; ao chegar em 100, a corrida termina.

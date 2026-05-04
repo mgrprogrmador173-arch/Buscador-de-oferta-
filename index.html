@@ -1,208 +1,789 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Contador de Calorias</title>
-    <style>
-      :root {
-        --bg: #0f172a;
-        --card: #111827;
-        --muted: #94a3b8;
-        --text: #e2e8f0;
-        --primary: #22d3ee;
-        --success: #34d399;
-        --danger: #fb7185;
-      }
-      * { box-sizing: border-box; }
-      body {
-        margin: 0;
-        min-height: 100vh;
-        font-family: Arial, sans-serif;
-        background: linear-gradient(160deg, #020617, var(--bg));
-        color: var(--text);
-      }
-      .container { width: min(940px, calc(100% - 24px)); margin: 24px auto; display: grid; gap: 16px; }
-      .card {
-        background: rgba(17, 24, 39, 0.95);
-        border: 1px solid #1f2937;
-        border-radius: 16px;
-        padding: 18px;
-      }
-      h1,h2,p { margin-top: 0; }
-      .grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
-      label { display: grid; gap: 8px; color: var(--muted); font-weight: 700; font-size: 0.92rem; }
-      input, select, button {
-        border: 1px solid #334155;
-        background: #0b1220;
-        color: var(--text);
-        border-radius: 10px;
-        padding: 10px;
-        font: inherit;
-      }
-      button { cursor: pointer; font-weight: 700; }
-      .btn-primary { background: linear-gradient(135deg, #06b6d4, var(--primary)); color: #082f49; border: none; }
-      .btn-danger { background: rgba(251, 113, 133, 0.12); color: var(--danger); border-color: rgba(251,113,133,.4); }
-      table { width: 100%; border-collapse: collapse; }
-      th, td { text-align: left; padding: 10px; border-bottom: 1px solid #1f2937; }
-      .muted { color: var(--muted); }
-      .summary { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
-      .summary .item { background: #0b1220; border-radius: 12px; padding: 12px; border: 1px solid #1e293b; }
-      .summary strong { color: var(--success); font-size: 1.2rem; }
-      .right { text-align: right; }
-    </style>
-  </head>
-  <body>
-    <main class="container">
-      <section class="card">
-        <h1>Contador de Calorias de Alimentos</h1>
-        <p class="muted">Adicione alimentos consumidos ao longo do dia e acompanhe calorias totais e macronutrientes.</p>
-      </section>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Retro Mobile Racer</title>
 
-      <section class="card">
-        <h2>Novo alimento</h2>
-        <form id="food-form" class="grid">
-          <label>Alimento
-            <input id="food-name" required placeholder="Ex.: Arroz cozido" />
-          </label>
-          <label>Quantidade (g)
-            <input id="food-grams" type="number" min="1" value="100" required />
-          </label>
-          <label>Calorias por 100g
-            <input id="food-kcal" type="number" min="0" value="130" required />
-          </label>
-          <label>Proteína por 100g (g)
-            <input id="food-protein" type="number" min="0" step="0.1" value="2.5" required />
-          </label>
-          <label>Carboidrato por 100g (g)
-            <input id="food-carbs" type="number" min="0" step="0.1" value="28" required />
-          </label>
-          <label>Gordura por 100g (g)
-            <input id="food-fat" type="number" min="0" step="0.1" value="0.3" required />
-          </label>
-          <div>
-            <button type="submit" class="btn-primary">Adicionar alimento</button>
-          </div>
-        </form>
-      </section>
+  <style>
+    :root {
+      --bg:#020617;
+      --panel:rgba(2,6,23,.78);
+      --border:#38bdf8;
+      --text:#e2e8f0;
+      --muted:#94a3b8;
+      --accent:#38bdf8;
+      --red:#ef4444;
+      --yellow:#facc15;
+      --green:#22c55e;
+    }
 
-      <section class="card">
-        <h2>Resumo diário</h2>
-        <div class="summary">
-          <div class="item"><div class="muted">Calorias totais</div><strong id="total-kcal">0 kcal</strong></div>
-          <div class="item"><div class="muted">Proteínas</div><strong id="total-protein">0 g</strong></div>
-          <div class="item"><div class="muted">Carboidratos</div><strong id="total-carbs">0 g</strong></div>
-          <div class="item"><div class="muted">Gorduras</div><strong id="total-fat">0 g</strong></div>
+    * {
+      box-sizing:border-box;
+      -webkit-tap-highlight-color:transparent;
+      user-select:none;
+    }
+
+    body {
+      margin:0;
+      min-height:100vh;
+      background:radial-gradient(circle at top,#111827,#020617);
+      color:var(--text);
+      font-family:Segoe UI,Tahoma,sans-serif;
+      display:grid;
+      place-items:center;
+      overflow:hidden;
+    }
+
+    .game-wrap {
+      position:relative;
+      width:100vw;
+      max-width:1200px;
+      aspect-ratio:16/9;
+      background:#020617;
+      overflow:hidden;
+      border-radius:16px;
+      box-shadow:0 0 40px rgba(56,189,248,.18);
+    }
+
+    canvas {
+      width:100%;
+      height:100%;
+      display:block;
+      background:#020617;
+    }
+
+    .hud-layer {
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      z-index:5;
+    }
+
+    .hud-box {
+      position:absolute;
+      background:var(--panel);
+      border:2px solid rgba(56,189,248,.75);
+      box-shadow:0 0 16px rgba(56,189,248,.18);
+      border-radius:12px;
+      padding:10px;
+      backdrop-filter:blur(4px);
+    }
+
+    .position {
+      top:12px;
+      left:12px;
+      width:145px;
+    }
+
+    .position .title {
+      color:#fb7185;
+      font-size:14px;
+      font-weight:900;
+      letter-spacing:1px;
+    }
+
+    .position .big {
+      font-size:44px;
+      line-height:44px;
+      color:var(--yellow);
+      font-weight:900;
+    }
+
+    .position .lap {
+      margin-top:4px;
+      color:white;
+      font-weight:800;
+    }
+
+    .timer {
+      top:12px;
+      left:50%;
+      transform:translateX(-50%);
+      min-width:210px;
+      text-align:center;
+    }
+
+    .timer .label {
+      color:var(--accent);
+      font-weight:900;
+      font-size:14px;
+    }
+
+    .timer .value {
+      font-size:32px;
+      font-weight:900;
+      letter-spacing:2px;
+    }
+
+    .speed-box {
+      top:12px;
+      right:12px;
+      width:230px;
+      text-align:right;
+    }
+
+    .speed {
+      font-size:52px;
+      font-weight:900;
+      line-height:52px;
+    }
+
+    .km {
+      font-size:16px;
+      color:var(--muted);
+    }
+
+    .gear {
+      color:var(--accent);
+      font-weight:900;
+      font-size:18px;
+    }
+
+    .gear span {
+      color:var(--yellow);
+      font-size:30px;
+    }
+
+    .bars {
+      top:150px;
+      right:12px;
+      width:230px;
+      display:grid;
+      gap:10px;
+    }
+
+    .bar-title {
+      font-weight:900;
+      font-size:14px;
+      margin-bottom:5px;
+    }
+
+    .bar-title.nitro {
+      color:var(--accent);
+    }
+
+    .bar-title.damage {
+      color:var(--red);
+    }
+
+    .bar {
+      width:100%;
+      height:16px;
+      border:1px solid #334155;
+      background:#020617;
+      display:flex;
+      gap:3px;
+      padding:3px;
+    }
+
+    .seg {
+      flex:1;
+      background:#1e293b;
+    }
+
+    .seg.on.nitro {
+      background:#22d3ee;
+    }
+
+    .seg.on.damage {
+      background:#ef4444;
+    }
+
+    .minimap {
+      left:12px;
+      top:150px;
+      width:145px;
+      height:145px;
+    }
+
+    .mini-track {
+      position:absolute;
+      inset:20px;
+      border:4px solid white;
+      border-radius:45% 55% 50% 40%;
+      opacity:.9;
+    }
+
+    .dot {
+      position:absolute;
+      width:10px;
+      height:10px;
+      border-radius:50%;
+      background:#22c55e;
+    }
+
+    .dot.red { background:#ef4444; left:80px; top:28px; }
+    .dot.blue { background:#38bdf8; left:46px; top:82px; }
+    .dot.green { background:#22c55e; left:92px; top:105px; }
+
+    .touch-controls {
+      position:absolute;
+      inset:0;
+      z-index:10;
+      pointer-events:none;
+    }
+
+    .steer-btn {
+      position:absolute;
+      bottom:22px;
+      width:120px;
+      height:120px;
+      border-radius:50%;
+      border:3px solid rgba(125,211,252,.95);
+      background:rgba(15,23,42,.55);
+      color:white;
+      font-size:62px;
+      font-weight:900;
+      display:grid;
+      place-items:center;
+      pointer-events:auto;
+      box-shadow:0 0 24px rgba(56,189,248,.35), inset 0 0 20px rgba(56,189,248,.15);
+      backdrop-filter:blur(4px);
+      cursor:pointer;
+    }
+
+    .steer-btn:active {
+      transform:scale(.94);
+      background:rgba(56,189,248,.35);
+    }
+
+    .steer-left {
+      left:28px;
+    }
+
+    .steer-right {
+      right:28px;
+    }
+
+    .start-screen {
+      position:absolute;
+      inset:0;
+      z-index:20;
+      display:grid;
+      place-items:center;
+      background:rgba(2,6,23,.75);
+      text-align:center;
+      padding:24px;
+    }
+
+    .start-card {
+      background:rgba(15,23,42,.9);
+      border:2px solid rgba(56,189,248,.7);
+      border-radius:18px;
+      padding:24px;
+      max-width:420px;
+      box-shadow:0 0 30px rgba(56,189,248,.18);
+    }
+
+    .start-card h1 {
+      margin:0 0 8px;
+      font-size:28px;
+    }
+
+    .start-card p {
+      color:var(--muted);
+      margin:0 0 18px;
+    }
+
+    .start-card button {
+      border:none;
+      background:linear-gradient(135deg,#38bdf8,#22d3ee);
+      color:#082f49;
+      padding:13px 22px;
+      border-radius:12px;
+      font-weight:900;
+      font-size:16px;
+      cursor:pointer;
+    }
+
+    @media (max-width:760px) {
+      .game-wrap {
+        width:100vw;
+        height:100vh;
+        max-width:none;
+        aspect-ratio:auto;
+        border-radius:0;
+      }
+
+      .position {
+        width:118px;
+      }
+
+      .position .big {
+        font-size:34px;
+      }
+
+      .timer {
+        min-width:160px;
+      }
+
+      .timer .value {
+        font-size:22px;
+      }
+
+      .speed-box {
+        width:160px;
+      }
+
+      .speed {
+        font-size:38px;
+      }
+
+      .bars {
+        display:none;
+      }
+
+      .minimap {
+        top:132px;
+        width:118px;
+        height:118px;
+      }
+
+      .steer-btn {
+        width:100px;
+        height:100px;
+        font-size:54px;
+        bottom:28px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="game-wrap">
+    <canvas id="game" width="960" height="540"></canvas>
+
+    <div class="hud-layer">
+      <div class="hud-box position">
+        <div class="title">POSITION</div>
+        <div><span class="big" id="pos">2</span> / 4</div>
+        <div class="lap">LAP <span id="lap">1/3</span></div>
+      </div>
+
+      <div class="hud-box timer">
+        <div class="label">TIME</div>
+        <div class="value" id="time">00:00:00</div>
+      </div>
+
+      <div class="hud-box speed-box">
+        <div><span class="speed" id="speed">0</span> <span class="km">KM/H</span></div>
+        <div class="gear">GEAR <span id="gear">1</span></div>
+      </div>
+
+      <div class="hud-box bars">
+        <div>
+          <div class="bar-title nitro">NITRO</div>
+          <div class="bar" id="nitroBar"></div>
         </div>
-      </section>
 
-      <section class="card">
-        <h2>Alimentos adicionados</h2>
-        <p id="empty-state" class="muted">Nenhum alimento adicionado.</p>
-        <table id="food-table" hidden>
-          <thead>
-            <tr>
-              <th>Alimento</th><th>Qtd (g)</th><th>kcal</th><th>P (g)</th><th>C (g)</th><th>G (g)</th><th class="right">Ação</th>
-            </tr>
-          </thead>
-          <tbody id="food-body"></tbody>
-        </table>
-      </section>
-    </main>
+        <div>
+          <div class="bar-title damage">DAMAGE</div>
+          <div class="bar" id="damageBar"></div>
+        </div>
+      </div>
 
-    <script>
-      const foods = [];
-      const form = document.getElementById('food-form');
-      const body = document.getElementById('food-body');
-      const table = document.getElementById('food-table');
-      const emptyState = document.getElementById('empty-state');
+      <div class="hud-box minimap">
+        <div class="mini-track"></div>
+        <div class="dot red"></div>
+        <div class="dot blue"></div>
+        <div class="dot green"></div>
+      </div>
+    </div>
 
-      const totalsEls = {
-        kcal: document.getElementById('total-kcal'),
-        protein: document.getElementById('total-protein'),
-        carbs: document.getElementById('total-carbs'),
-        fat: document.getElementById('total-fat'),
-      };
+    <div class="touch-controls">
+      <button class="steer-btn steer-left" data-key="ArrowLeft">◀</button>
+      <button class="steer-btn steer-right" data-key="ArrowRight">▶</button>
+    </div>
 
-      function toNumber(id) {
-        return Number(document.getElementById(id).value);
+    <div class="start-screen" id="startScreen">
+      <div class="start-card">
+        <h1>Retro Mobile Racer</h1>
+        <p>O carro acelera sozinho. Use apenas os botões da esquerda e direita.</p>
+        <button id="startBtn">INICIAR CORRIDA</button>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const canvas = document.getElementById("game");
+    const ctx = canvas.getContext("2d");
+
+    const speedEl = document.getElementById("speed");
+    const gearEl = document.getElementById("gear");
+    const timeEl = document.getElementById("time");
+    const lapEl = document.getElementById("lap");
+    const posEl = document.getElementById("pos");
+    const nitroBar = document.getElementById("nitroBar");
+    const damageBar = document.getElementById("damageBar");
+    const startScreen = document.getElementById("startScreen");
+    const startBtn = document.getElementById("startBtn");
+
+    const keys = {};
+
+    const road = {
+      x: canvas.width / 2,
+      width: 430,
+      curve: 0,
+      target: 0
+    };
+
+    const player = {
+      lane: 0,
+      speed: 0,
+      max: 300,
+      w: 72,
+      h: 116
+    };
+
+    let traffic = [];
+    let fuels = [];
+    let frame = 0;
+    let time = 0;
+    let distance = 0;
+    let damage = 0;
+    let nitro = 100;
+    let lap = 1;
+    let running = false;
+
+    function makeBar(el, total, active, type) {
+      el.innerHTML = "";
+
+      for (let i = 0; i < total; i++) {
+        const seg = document.createElement("div");
+        seg.className = "seg";
+
+        if (i < active) {
+          seg.classList.add("on", type);
+        }
+
+        el.appendChild(seg);
+      }
+    }
+
+    makeBar(nitroBar, 10, 8, "nitro");
+    makeBar(damageBar, 10, 0, "damage");
+
+    function resetGame() {
+      traffic = [];
+      fuels = [];
+      player.lane = 0;
+      player.speed = 0;
+      frame = 0;
+      time = 0;
+      distance = 0;
+      damage = 0;
+      nitro = 100;
+      lap = 1;
+      running = true;
+      startScreen.style.display = "none";
+    }
+
+    function spawnTraffic() {
+      const lane = (-1 + Math.floor(Math.random() * 3)) * 95;
+
+      traffic.push({
+        lane,
+        z: 1,
+        w: 62,
+        h: 105,
+        speed: 90 + Math.random() * 120,
+        color: `hsl(${Math.random() * 360},80%,58%)`
+      });
+    }
+
+    function spawnFuel() {
+      const lane = (-1 + Math.floor(Math.random() * 3)) * 95;
+      fuels.push({ lane, z: 1, size: 28 });
+    }
+
+    function project(lane, z) {
+      const p = 1 / z;
+      const y = canvas.height * (0.22 + 0.73 * (1 - p));
+      const x = road.x + lane * p + road.curve * (1 - p) * 240;
+
+      return { x, y, scale: p };
+    }
+
+    function drawWorld() {
+      const sky = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      sky.addColorStop(0, "#10002b");
+      sky.addColorStop(0.45, "#1e1b4b");
+      sky.addColorStop(1, "#020617");
+
+      ctx.fillStyle = sky;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      drawCity();
+      drawRoad();
+    }
+
+    function drawCity() {
+      ctx.fillStyle = "#020617";
+
+      for (let i = 0; i < 26; i++) {
+        const w = 24 + Math.random() * 34;
+        const h = 80 + Math.random() * 120;
+        const x = i * 42;
+        const y = canvas.height * 0.48 - h;
+
+        ctx.fillRect(x, y, w, h);
+
+        ctx.fillStyle = i % 3 === 0 ? "#f0abfc" : "#38bdf8";
+
+        for (let yy = y + 12; yy < y + h - 8; yy += 18) {
+          for (let xx = x + 6; xx < x + w - 6; xx += 12) {
+            if (Math.random() > 0.55) ctx.fillRect(xx, yy, 4, 7);
+          }
+        }
+
+        ctx.fillStyle = "#020617";
       }
 
-      function recalcTotals() {
-        const totals = foods.reduce((acc, item) => {
-          acc.kcal += item.kcal;
-          acc.protein += item.protein;
-          acc.carbs += item.carbs;
-          acc.fat += item.fat;
-          return acc;
-        }, { kcal: 0, protein: 0, carbs: 0, fat: 0 });
+      ctx.fillStyle = "#0f172a";
+      ctx.fillRect(0, canvas.height * 0.48, canvas.width, canvas.height * 0.12);
+    }
 
-        totalsEls.kcal.textContent = `${totals.kcal.toFixed(0)} kcal`;
-        totalsEls.protein.textContent = `${totals.protein.toFixed(1)} g`;
-        totalsEls.carbs.textContent = `${totals.carbs.toFixed(1)} g`;
-        totalsEls.fat.textContent = `${totals.fat.toFixed(1)} g`;
+    function drawRoad() {
+      road.target += (Math.random() - 0.5) * 0.06;
+      road.target = Math.max(-1.25, Math.min(1.25, road.target));
+      road.curve += (road.target - road.curve) * 0.025;
+
+      for (let s = 85; s > 1; s--) {
+        const z = s / 16;
+        const p = project(0, z);
+        const w = road.width / z;
+        const h = 12 + 280 / z / 60;
+
+        ctx.fillStyle = s % 2 ? "#111827" : "#1f2937";
+        ctx.fillRect(p.x - w / 2, p.y, w, h);
+
+        ctx.fillStyle = s % 2 ? "#ef4444" : "#f8fafc";
+        ctx.fillRect(p.x - w / 2 - 18 / z, p.y, 16 / z, h);
+        ctx.fillRect(p.x + w / 2 + 2 / z, p.y, 16 / z, h);
+
+        if (s % 8 === 0) {
+          ctx.fillStyle = "#f8fafc";
+          ctx.fillRect(p.x - 5, p.y, 10, 20);
+        }
+      }
+    }
+
+    function drawCar(x, y, w, h, color, playerCar = false) {
+      const g = ctx.createLinearGradient(x - w / 2, y - h / 2, x + w / 2, y + h / 2);
+      g.addColorStop(0, color);
+      g.addColorStop(1, "#111827");
+
+      ctx.fillStyle = g;
+      ctx.fillRect(x - w / 2, y - h / 2, w, h);
+
+      ctx.fillStyle = "rgba(0,0,0,.35)";
+      ctx.fillRect(x - w / 2 + w * 0.15, y - h / 2 + h * 0.18, w * 0.7, h * 0.24);
+
+      ctx.fillStyle = "#bae6fd";
+      ctx.fillRect(x - w * 0.28, y - h * 0.34, w * 0.56, h * 0.16);
+
+      ctx.fillStyle = "#f87171";
+      ctx.fillRect(x - w * 0.38, y + h * 0.32, w * 0.22, h * 0.08);
+      ctx.fillRect(x + w * 0.16, y + h * 0.32, w * 0.22, h * 0.08);
+
+      if (playerCar) {
+        ctx.fillStyle = "#f8fafc";
+        ctx.font = "bold 11px Segoe UI";
+        ctx.fillText("XR-7", x - 13, y + h * 0.18);
+      }
+    }
+
+    function hit(a, b) {
+      return Math.abs(a.x - b.x) < (a.w + b.w) / 2 &&
+             Math.abs(a.y - b.y) < (a.h + b.h) / 2;
+    }
+
+    function update() {
+      if (!running) return;
+
+      frame++;
+      time += 1 / 60;
+
+      // Aceleração automática
+      player.speed += 1.15;
+      player.speed = Math.min(player.speed, player.max);
+
+      // Apenas esquerda e direita
+      if (keys.ArrowLeft) player.lane -= 5.6;
+      if (keys.ArrowRight) player.lane += 5.6;
+
+      player.lane = Math.max(-175, Math.min(175, player.lane));
+
+      distance += player.speed / 9000;
+
+      if (distance > lap * 3.5 && lap < 3) {
+        lap++;
       }
 
-      function render() {
-        body.innerHTML = '';
+      if (frame % 58 === 0) spawnTraffic();
+      if (frame % 300 === 0) spawnFuel();
 
-        foods.forEach((food, index) => {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td>${food.name}</td>
-            <td>${food.grams}</td>
-            <td>${food.kcal.toFixed(0)}</td>
-            <td>${food.protein.toFixed(1)}</td>
-            <td>${food.carbs.toFixed(1)}</td>
-            <td>${food.fat.toFixed(1)}</td>
-            <td class="right"><button class="btn-danger" data-remove="${index}">Remover</button></td>
-          `;
-          body.appendChild(tr);
-        });
+      const advance = 0.016 + player.speed / 17500;
 
-        table.hidden = foods.length === 0;
-        emptyState.hidden = foods.length > 0;
-        recalcTotals();
+      traffic.forEach(c => c.z -= advance * (1 + c.speed / 250));
+      fuels.forEach(f => f.z -= advance);
+
+      traffic = traffic.filter(c => c.z > 0.08);
+      fuels = fuels.filter(f => f.z > 0.08);
+
+      const pp = project(player.lane, 0.13);
+      const pbox = { x: pp.x, y: pp.y, w: player.w, h: player.h };
+
+      for (const c of traffic) {
+        const p = project(c.lane, c.z);
+        const box = {
+          x: p.x,
+          y: p.y,
+          w: c.w * p.scale * 2.4,
+          h: c.h * p.scale * 2.4
+        };
+
+        if (hit(pbox, box)) {
+          player.speed *= 0.45;
+          damage += 15;
+          c.z = 0;
+        }
       }
 
-      body.addEventListener('click', (event) => {
-        const button = event.target.closest('button[data-remove]');
-        if (!button) return;
-        const index = Number(button.dataset.remove);
-        foods.splice(index, 1);
-        render();
+      for (const f of fuels) {
+        const p = project(f.lane, f.z);
+        const box = {
+          x: p.x,
+          y: p.y,
+          w: f.size * p.scale * 2.8,
+          h: f.size * p.scale * 2.8
+        };
+
+        if (hit(pbox, box)) {
+          nitro = Math.min(100, nitro + 25);
+          f.z = 0;
+        }
+      }
+
+      if (damage >= 100) {
+        running = false;
+        startScreen.style.display = "grid";
+        startBtn.textContent = "REINICIAR CORRIDA";
+      }
+    }
+
+    function renderObjects() {
+      const all = [];
+
+      traffic.forEach(c => all.push({
+        ...project(c.lane, c.z),
+        type: "car",
+        obj: c,
+        depth: c.z
+      }));
+
+      fuels.forEach(f => all.push({
+        ...project(f.lane, f.z),
+        type: "fuel",
+        obj: f,
+        depth: f.z
+      }));
+
+      all.sort((a, b) => b.depth - a.depth);
+
+      for (const it of all) {
+        if (it.type === "car") {
+          drawCar(
+            it.x,
+            it.y,
+            it.obj.w * it.scale * 2.4,
+            it.obj.h * it.scale * 2.4,
+            it.obj.color
+          );
+        } else {
+          const s = it.obj.size * it.scale * 2.8;
+
+          ctx.fillStyle = "#22d3ee";
+          ctx.fillRect(it.x - s / 2, it.y - s / 2, s, s);
+
+          ctx.fillStyle = "#0f172a";
+          ctx.fillRect(it.x - s * 0.22, it.y - s * 0.35, s * 0.44, s * 0.7);
+        }
+      }
+
+      const p = project(player.lane, 0.13);
+      drawCar(p.x, p.y, player.w, player.h, "#ef4444", true);
+    }
+
+    function updateHud() {
+      const m = Math.floor(time / 60);
+      const s = Math.floor(time % 60);
+      const cs = Math.floor((time % 1) * 100);
+
+      timeEl.textContent =
+        `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}:${String(cs).padStart(2, "0")}`;
+
+      speedEl.textContent = Math.floor(player.speed);
+      gearEl.textContent = Math.max(1, Math.min(5, Math.floor(player.speed / 60) + 1));
+      lapEl.textContent = `${lap}/3`;
+
+      const currentPos = damage > 70 ? 4 : damage > 40 ? 3 : 2;
+      posEl.textContent = currentPos;
+
+      makeBar(nitroBar, 10, Math.round(nitro / 10), "nitro");
+      makeBar(damageBar, 10, Math.round(damage / 10), "damage");
+    }
+
+    function render() {
+      drawWorld();
+      renderObjects();
+      updateHud();
+
+      requestAnimationFrame(loop);
+    }
+
+    function loop() {
+      update();
+      render();
+    }
+
+    document.querySelectorAll("[data-key]").forEach(btn => {
+      const key = btn.dataset.key;
+
+      btn.addEventListener("pointerdown", e => {
+        e.preventDefault();
+        btn.setPointerCapture?.(e.pointerId);
+        keys[key] = true;
       });
 
-      form.addEventListener('submit', (event) => {
-        event.preventDefault();
-        const name = document.getElementById('food-name').value.trim();
-        const grams = toNumber('food-grams');
-        const kcalPer100 = toNumber('food-kcal');
-        const proteinPer100 = toNumber('food-protein');
-        const carbsPer100 = toNumber('food-carbs');
-        const fatPer100 = toNumber('food-fat');
-
-        if (!name || grams <= 0) return;
-
-        const factor = grams / 100;
-
-        foods.push({
-          name,
-          grams,
-          kcal: kcalPer100 * factor,
-          protein: proteinPer100 * factor,
-          carbs: carbsPer100 * factor,
-          fat: fatPer100 * factor,
-        });
-
-        form.reset();
-        document.getElementById('food-grams').value = 100;
-        document.getElementById('food-kcal').value = 130;
-        document.getElementById('food-protein').value = 2.5;
-        document.getElementById('food-carbs').value = 28;
-        document.getElementById('food-fat').value = 0.3;
-        render();
+      btn.addEventListener("pointerup", e => {
+        e.preventDefault();
+        keys[key] = false;
       });
-    </script>
-  </body>
+
+      btn.addEventListener("pointercancel", () => keys[key] = false);
+      btn.addEventListener("pointerleave", () => keys[key] = false);
+    });
+
+    window.addEventListener("keydown", e => {
+      if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+        keys[e.key] = true;
+      }
+    });
+
+    window.addEventListener("keyup", e => {
+      keys[e.key] = false;
+    });
+
+    window.addEventListener("blur", () => {
+      keys.ArrowLeft = false;
+      keys.ArrowRight = false;
+    });
+
+    startBtn.addEventListener("click", resetGame);
+
+    loop();
+  </script>
+</body>
 </html>
