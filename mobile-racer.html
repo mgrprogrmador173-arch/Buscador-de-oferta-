@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Retro Mobile Racer</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}body{margin:0;background:#020617;color:#fff;font-family:Arial,sans-serif;overflow:hidden}.game{position:relative;width:100vw;height:100vh;background:#020617}canvas{width:100%;height:100%;display:block}.hud{position:absolute;inset:0;pointer-events:none}.box{position:absolute;background:rgba(2,6,23,.75);border:2px solid #38bdf8;border-radius:12px;padding:10px;box-shadow:0 0 18px rgba(56,189,248,.25)}.pos{top:10px;left:10px}.timer{top:10px;left:50%;transform:translateX(-50%);text-align:center}.speed{top:10px;right:10px;text-align:right}.big{font-size:38px;font-weight:900;color:#facc15}.label{font-size:13px;color:#38bdf8;font-weight:900}.value{font-size:28px;font-weight:900}.mini{top:120px;left:10px;width:115px;height:115px}.track{position:absolute;inset:22px;border:4px solid #fff;border-radius:45% 55% 50% 40%}.barArea{top:120px;right:10px;width:190px}.barName{font-size:13px;font-weight:900;margin:6px 0}.bar{height:14px;background:#111827;border:1px solid #334155;display:flex;gap:3px;padding:3px}.seg{flex:1;background:#1e293b}.nitro .on{background:#22d3ee}.damage .on{background:#ef4444}.controls{position:absolute;inset:0;pointer-events:none}.btn{position:absolute;bottom:30px;width:112px;height:112px;border-radius:50%;border:3px solid #7dd3fc;background:rgba(15,23,42,.55);color:white;font-size:60px;font-weight:900;pointer-events:auto;box-shadow:0 0 24px rgba(56,189,248,.4)}.btn:active{transform:scale(.94);background:rgba(56,189,248,.35)}.left{left:25px}.right{right:25px}.start{position:absolute;inset:0;background:rgba(2,6,23,.78);display:grid;place-items:center;text-align:center;z-index:20}.card{background:rgba(15,23,42,.92);border:2px solid #38bdf8;border-radius:18px;padding:24px;max-width:380px}.card h1{margin:0 0 10px}.card p{color:#cbd5e1}.card button{border:0;border-radius:12px;background:linear-gradient(135deg,#38bdf8,#22d3ee);padding:14px 22px;font-weight:900;color:#082f49}@media(max-width:760px){.barArea{display:none}.box{padding:8px}.value{font-size:22px}.big{font-size:30px}.btn{width:96px;height:96px;font-size:50px}.mini{top:105px;width:96px;height:96px}.speed{width:140px}}
+</style>
+</head>
+<body>
+<div class="game">
+<canvas id="game" width="960" height="540"></canvas>
+<div class="hud">
+<div class="box pos"><div class="label">POSITION</div><div><span class="big" id="pos">2</span>/4</div><div>LAP <span id="lap">1/3</span></div></div>
+<div class="box timer"><div class="label">TIME</div><div class="value" id="time">00:00:00</div></div>
+<div class="box speed"><div><span class="value" id="speed">0</span> KM/H</div><div class="label">GEAR <span id="gear">1</span></div></div>
+<div class="box mini"><div class="track"></div></div>
+<div class="box barArea"><div class="barName" style="color:#22d3ee">NITRO</div><div class="bar nitro" id="nitro"></div><div class="barName" style="color:#ef4444">DAMAGE</div><div class="bar damage" id="damage"></div></div>
+</div>
+<div class="controls"><button class="btn left" data-key="ArrowLeft">◀</button><button class="btn right" data-key="ArrowRight">▶</button></div>
+<div class="start" id="start"><div class="card"><h1>Retro Mobile Racer</h1><p>O carro acelera sozinho. Use apenas esquerda e direita.</p><button id="play">INICIAR</button></div></div>
+</div>
+<script>
+const canvas=document.getElementById('game'),ctx=canvas.getContext('2d');
+const speedEl=document.getElementById('speed'),gearEl=document.getElementById('gear'),timeEl=document.getElementById('time'),lapEl=document.getElementById('lap'),posEl=document.getElementById('pos'),nitroEl=document.getElementById('nitro'),damageEl=document.getElementById('damage'),start=document.getElementById('start'),play=document.getElementById('play');
+const keys={},road={x:480,width:430,curve:0,target:0},player={lane:0,speed:0,max:300,w:72,h:116};let traffic=[],items=[],frame=0,time=0,damage=0,nitro=100,lap=1,running=false;
+function bars(el,val,type){el.innerHTML='';for(let i=0;i<10;i++){const s=document.createElement('div');s.className='seg'+(i<Math.round(val/10)?' on':'');el.appendChild(s)}}
+function reset(){traffic=[];items=[];frame=0;time=0;damage=0;nitro=100;lap=1;player.lane=0;player.speed=0;running=true;start.style.display='none'}
+function project(lane,z){const p=1/z;return{x:road.x+lane*p+road.curve*(1-p)*240,y:canvas.height*(.22+.73*(1-p)),scale:p}}
+function world(){let g=ctx.createLinearGradient(0,0,0,540);g.addColorStop(0,'#10002b');g.addColorStop(.45,'#1e1b4b');g.addColorStop(1,'#020617');ctx.fillStyle=g;ctx.fillRect(0,0,960,540);ctx.fillStyle='#020617';for(let i=0;i<28;i++){let w=24+Math.random()*34,h=80+Math.random()*120,x=i*40,y=260-h;ctx.fillRect(x,y,w,h);ctx.fillStyle=i%3?'#38bdf8':'#f0abfc';for(let yy=y+12;yy<y+h-8;yy+=18)for(let xx=x+6;xx<x+w-6;xx+=12)if(Math.random()>.6)ctx.fillRect(xx,yy,4,7);ctx.fillStyle='#020617'}road.target+=(Math.random()-.5)*.06;road.target=Math.max(-1.25,Math.min(1.25,road.target));road.curve+=(road.target-road.curve)*.025;for(let s=85;s>1;s--){let z=s/16,p=project(0,z),w=road.width/z,h=12+280/z/60;ctx.fillStyle=s%2?'#111827':'#1f2937';ctx.fillRect(p.x-w/2,p.y,w,h);ctx.fillStyle=s%2?'#ef4444':'#f8fafc';ctx.fillRect(p.x-w/2-18/z,p.y,16/z,h);ctx.fillRect(p.x+w/2+2/z,p.y,16/z,h);if(s%8===0){ctx.fillStyle='#f8fafc';ctx.fillRect(p.x-5,p.y,10,20)}}}
+function car(x,y,w,h,c){let g=ctx.createLinearGradient(x-w/2,y-h/2,x+w/2,y+h/2);g.addColorStop(0,c);g.addColorStop(1,'#111827');ctx.fillStyle=g;ctx.fillRect(x-w/2,y-h/2,w,h);ctx.fillStyle='rgba(0,0,0,.35)';ctx.fillRect(x-w*.35,y-h*.32,w*.7,h*.25);ctx.fillStyle='#bae6fd';ctx.fillRect(x-w*.28,y-h*.34,w*.56,h*.16);ctx.fillStyle='#f87171';ctx.fillRect(x-w*.38,y+h*.32,w*.22,h*.08);ctx.fillRect(x+w*.16,y+h*.32,w*.22,h*.08)}
+function hit(a,b){return Math.abs(a.x-b.x)<(a.w+b.w)/2&&Math.abs(a.y-b.y)<(a.h+b.h)/2}
+function spawn(){traffic.push({lane:(-1+Math.floor(Math.random()*3))*95,z:1,w:62,h:105,color:`hsl(${Math.random()*360},80%,58%)`})}
+function update(){if(!running)return;frame++;time+=1/60;player.speed=Math.min(player.max,player.speed+1.15);if(keys.ArrowLeft)player.lane-=5.6;if(keys.ArrowRight)player.lane+=5.6;player.lane=Math.max(-175,Math.min(175,player.lane));if(frame%58===0)spawn();let adv=.016+player.speed/17500;traffic.forEach(c=>c.z-=adv*1.4);traffic=traffic.filter(c=>c.z>.08);let pp=project(player.lane,.13),pb={x:pp.x,y:pp.y,w:player.w,h:player.h};for(const c of traffic){let p=project(c.lane,c.z),b={x:p.x,y:p.y,w:c.w*p.scale*2.4,h:c.h*p.scale*2.4};if(hit(pb,b)){player.speed*=.45;damage+=15;c.z=0}}if(time>45)lap=2;if(time>90)lap=3;if(damage>=100){running=false;start.style.display='grid';play.textContent='REINICIAR'}}
+function hud(){let m=Math.floor(time/60),s=Math.floor(time%60),cs=Math.floor(time%1*100);timeEl.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}:${String(cs).padStart(2,'0')}`;speedEl.textContent=Math.floor(player.speed);gearEl.textContent=Math.max(1,Math.min(5,Math.floor(player.speed/60)+1));lapEl.textContent=lap+'/3';posEl.textContent=damage>70?4:damage>40?3:2;bars(nitroEl,nitro,'nitro');bars(damageEl,damage,'damage')}
+function render(){world();let all=traffic.map(c=>({...project(c.lane,c.z),obj:c,depth:c.z})).sort((a,b)=>b.depth-a.depth);for(const it of all)car(it.x,it.y,it.obj.w*it.scale*2.4,it.obj.h*it.scale*2.4,it.obj.color);let p=project(player.lane,.13);car(p.x,p.y,player.w,player.h,'#ef4444');hud();requestAnimationFrame(loop)}function loop(){update();render()}
+document.querySelectorAll('[data-key]').forEach(b=>{let k=b.dataset.key;b.onpointerdown=e=>{e.preventDefault();keys[k]=true};b.onpointerup=e=>{e.preventDefault();keys[k]=false};b.onpointercancel=()=>keys[k]=false;b.onpointerleave=()=>keys[k]=false});window.onkeydown=e=>{if(e.key==='ArrowLeft'||e.key==='ArrowRight')keys[e.key]=true};window.onkeyup=e=>keys[e.key]=false;play.onclick=reset;loop();
+</script>
+</body>
+</html>
